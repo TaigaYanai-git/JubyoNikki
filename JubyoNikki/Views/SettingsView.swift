@@ -81,11 +81,26 @@ struct SettingsView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .dlCard()
+
+                    VStack(spacing: 14) {
+                        linkRow("questionmark.circle", "サポート", "https://taigayanai-git.github.io/JubyoNikki/")
+                        Divider().overlay(Color.dlDivider)
+                        linkRow("hand.raised", "プライバシーポリシー", "https://taigayanai-git.github.io/JubyoNikki/privacy.html")
+                    }
+                    .dlCard()
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)
             }
             .dlScreen("設定")
+        }
+    }
+
+    private func linkRow(_ icon: String, _ title: String, _ url: String) -> some View {
+        Link(destination: URL(string: url)!) {
+            SettingRow(icon: icon, title: title) {
+                Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundColor(.dlTextLight)
+            }
         }
     }
 
