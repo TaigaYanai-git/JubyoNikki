@@ -116,7 +116,7 @@ struct TodayView: View {
             Button {
                 showWrite = true
             } label: {
-                Label("10秒 書き足す", systemImage: "plus")
+                Label("10秒追加", systemImage: "plus")
             }
             .buttonStyle(SecondaryButtonStyle())
             if let next = reminder.nextFire(writtenToday: true) {

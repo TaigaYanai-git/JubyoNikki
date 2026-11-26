@@ -18,8 +18,10 @@ struct WriteView: View {
     @State private var maxCount = 0
     @State private var finished = false
     @State private var bonusTick = 0
-    /// 書きはじめた時点で、今日すでに書いてあった文（書き足すときに上へ小さく出す）
-    @State private var earlier: String?
+    /// 開いた時点の今日の文（10秒追加のとき。入力欄に入れて、前の文も直せる）
+    @State private var original: String?
+    /// 開いた時点の文字数（空白を除く）。これより増えた分だけ秒がのびる
+    @State private var baseCount = 0
     @FocusState private var focused: Bool
 
     private let ticker = Timer.publish(every: 1.0 / 30, on: .main, in: .common).autoconnect()
@@ -28,7 +30,8 @@ struct WriteView: View {
     private var todayKey: String { Day.key() }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
     private var remaining: Double { max(0, deadline.timeIntervalSince(now)) }
-    private var gained: Int { maxCount }
+    private var gained: Int { maxCount - baseCount }
+    private var charCount: Int { text.filter { !$0.isWhitespace && !$0.isNewline }.count }
 
     var body: some View {
         ZStack {
@@ -116,15 +119,9 @@ struct WriteView: View {
 
     private var editor: some View {
         VStack(alignment: .leading, spacing: 10) {
-            if let earlier, !earlier.isEmpty {
-                Text(earlier)
-                    .font(.subheadline)
-                    .foregroundColor(.dlTextSub)
-                    .lineLimit(3)
-            }
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
-                    Text(earlier == nil ? "今日あったこと、ひとことで。" : "書き足す")
+                    Text("今日あったこと、ひとことで。")
                         .foregroundColor(.dlTextLight)
                         .padding(.top, 8)
                         .padding(.leading, 5)
@@ -141,7 +138,7 @@ struct WriteView: View {
             .background(Color.dlCardTint)
             .cornerRadius(14)
             HStack {
-                Text("\(gained)文字")
+                Text("\(charCount)文字")
                 Spacer()
                 Text("+\(gained)秒")
             }
@@ -162,7 +159,7 @@ struct WriteView: View {
     private var finishedButtons: some View {
         VStack(spacing: 10) {
             if text.isEmpty {
-                Text("今日は書けませんでした。また明日。")
+                Text(original == nil ? "今日は書けませんでした。また明日。" : "今日の日記を消しました。")
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.dlText)
             } else {
@@ -190,9 +187,10 @@ struct WriteView: View {
     // MARK: 動き
 
     private func begin() {
-        earlier = existing?.text
-        text = ""
-        maxCount = 0
+        original = existing?.text
+        text = original ?? ""
+        baseCount = charCount
+        maxCount = baseCount
         finished = false
         start = Date()
         now = start
@@ -215,15 +213,21 @@ struct WriteView: View {
         UINotificationFeedbackGenerator().notificationOccurred(text.isEmpty ? .warning : .success)
     }
 
+    /// 入力欄の文で今日の日記を置き換える（10秒追加では前の文も直せるため）。
+    /// 何も変えていなければ保存しない。全部消したら今日の日記を消す
     private func save() {
         let body = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !body.isEmpty else { return }
+        if let original, body == original.trimmingCharacters(in: .whitespacesAndNewlines) { return }
         let used = min(Date(), deadline).timeIntervalSince(start)
         if let existing {
-            existing.text += (existing.text.isEmpty ? "" : "\n") + body
-            existing.seconds += used
-            existing.updatedAt = Date()
-        } else {
+            if body.isEmpty {
+                context.delete(existing)
+            } else {
+                existing.text = body
+                existing.seconds += used
+                existing.updatedAt = Date()
+            }
+        } else if !body.isEmpty {
             context.insert(DiaryEntry(dayKey: todayKey, text: body, seconds: used))
         }
         try? context.save()
