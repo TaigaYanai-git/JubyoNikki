@@ -7,7 +7,7 @@ import UIKit
 extension Color {
     /// 画面の背景。ライトでは「白」（初期値）か、Our Music と同じ薄いラベンダー
     static var dlBg: Color {
-        let lavender = ThemeStore.shared.background == .lavender || ThemeStore.shared.background == .dots
+        let lavender = ThemeStore.shared.background != .white
         return Color(UIColor { t in
             t.userInterfaceStyle == .dark
                 ? UIColor(red: 0.11, green: 0.09, blue: 0.14, alpha: 1)
@@ -51,12 +51,10 @@ extension Color {
 }
 
 enum AppBackground: Int, CaseIterable, Identifiable {
-    // 並びは設定の選択肢の順
-    case ruled = 3, white = 0, lavender = 1, dots = 2
+    case white = 0, lavender = 1, dots = 2
     var id: Int { rawValue }
     var label: String {
         switch self {
-        case .ruled: return "横線"
         case .white: return "白"
         case .lavender: return "ラベンダー"
         case .dots: return "水玉"
@@ -85,8 +83,6 @@ final class ThemeStore: ObservableObject {
         didSet { UserDefaults.standard.set(background.rawValue, forKey: "background") }
     }
     var showsDots: Bool { background == .dots }
-    /// 白地（白・横線）。白いカードに細い線を付けて区切る
-    var isPlainWhite: Bool { background == .white || background == .ruled }
 
     var accent: ThemeAccent {
         Self.accents[Self.accents.indices.contains(accentIndex) ? accentIndex : 0]
@@ -127,8 +123,7 @@ final class ThemeStore: ObservableObject {
         let ud = UserDefaults.standard
         accentIndex = ud.integer(forKey: "accent")
         isDark = ud.bool(forKey: "isDark")
-        // 初期値はノートの横線（まだ選んでいない人も横線になる）
-        background = (ud.object(forKey: "background") as? Int).flatMap(AppBackground.init(rawValue:)) ?? .ruled
+        background = AppBackground(rawValue: ud.integer(forKey: "background")) ?? .white
     }
 }
 
@@ -187,8 +182,8 @@ struct CardModifier: ViewModifier {
             .background(Color.dlCard)
             .cornerRadius(20)
             .overlay(RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(Color.dlDivider, lineWidth: theme.isPlainWhite ? 1 : 0))
-            .shadow(color: .black.opacity(theme.isPlainWhite ? 0.04 : 0.05), radius: 12, x: 0, y: 4)
+                .strokeBorder(Color.dlDivider, lineWidth: theme.background == .white ? 1 : 0))
+            .shadow(color: .black.opacity(theme.background == .white ? 0.04 : 0.05), radius: 12, x: 0, y: 4)
     }
 }
 
@@ -212,9 +207,6 @@ struct DlBackground: View {
     var body: some View {
         ZStack {
             Color.dlBg
-            if theme.background == .ruled {
-                RuledLines(spacing: 32, top: 0).opacity(0.9)
-            }
             if theme.showsDots {
                 Canvas { ctx, size in
                     let c = Color.dlPrimary.opacity(0.08)
@@ -253,68 +245,5 @@ struct SettingRow<Trailing: View>: View {
             Spacer(minLength: 8)
             trailing()
         }
-    }
-}
-
-// MARK: - 日記らしさ（文字と罫線）
-
-extension Font {
-    /// 日記の文字（Klee One）。手で書いたような筆あと
-    static func diary(_ size: CGFloat, bold: Bool = false) -> Font {
-        .custom(bold ? "KleeOne-SemiBold" : "KleeOne-Regular", size: size)
-    }
-}
-
-enum DiaryText {
-    static let size: CGFloat = 18
-    static var uiFont: UIFont { UIFont(name: "KleeOne-Regular", size: size) ?? .systemFont(ofSize: size) }
-    /// 1行の高さ（罫線の間隔）。文字の高さより少し広く
-    static var pitch: CGFloat { (uiFont.lineHeight * 1.5).rounded() }
-    static var lineSpacing: CGFloat { pitch - uiFont.lineHeight }
-}
-
-extension Color {
-    /// ノートの罫線（淡い青）
-    static let dlRule = Color(UIColor { t in
-        t.userInterfaceStyle == .dark
-            ? UIColor(white: 1, alpha: 0.07)
-            : UIColor(red: 0.76, green: 0.83, blue: 0.92, alpha: 0.55)
-    })
-}
-
-/// 横線を一定の間隔で引く（top は最初の線の位置）
-struct RuledLines: View {
-    var spacing: CGFloat
-    var top: CGFloat
-    var body: some View {
-        Canvas { ctx, size in
-            var y = top
-            while y < size.height {
-                var p = Path()
-                p.move(to: CGPoint(x: 0, y: y))
-                p.addLine(to: CGPoint(x: size.width, y: y))
-                ctx.stroke(p, with: .color(.dlRule), lineWidth: 1)
-                y += spacing
-            }
-        }
-        .allowsHitTesting(false)
-    }
-}
-
-/// 罫線の上に書いたような日記の文
-struct RuledText: View {
-    let text: String
-    var minLines = 1
-    var body: some View {
-        Text(text)
-            .font(.diary(DiaryText.size))
-            .lineSpacing(DiaryText.lineSpacing)
-            .foregroundColor(.dlText)
-            .padding(.top, DiaryText.lineSpacing / 2)
-            .frame(maxWidth: .infinity, minHeight: DiaryText.pitch * CGFloat(minLines), alignment: .topLeading)
-            .background(alignment: .top) {
-                // 各行の下に線（1行 = pitch）
-                RuledLines(spacing: DiaryText.pitch, top: DiaryText.pitch)
-            }
     }
 }

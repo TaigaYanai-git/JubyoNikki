@@ -130,8 +130,7 @@ private struct BackgroundSwatch: View {
     var body: some View {
         ZStack {
             Color.dlCard
-            if kind == .lavender || kind == .dots { Color(red: 0.969, green: 0.957, blue: 0.988) }
-            if kind == .ruled { RuledLines(spacing: 12, top: 12) }
+            if kind != .white { Color(red: 0.969, green: 0.957, blue: 0.988) }
             if kind == .dots {
                 Canvas { ctx, size in
                     var y: CGFloat = 8, row = 0
