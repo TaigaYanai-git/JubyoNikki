@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """アイコン候補を3つ作る（Icon Composer の .icon）。どれも寸法は黄金比 φ から。
-  A  白い地：今のタイマーをライトに（淡い外枠・赤い 10 秒の弧・濃い「10」）
-  B  赤い地：赤一色の地に白い外枠と白い「10」（ストアで目立つ）
-  C  「1」＋ストップウォッチの「0」：0 がそのままタイマーになっている
+  A  白い地：今のタイマーをライトに（淡い外枠・琥珀の 10 秒の弧・インディゴの「10」）
+  C  「1」＋ストップウォッチの「0」：0 がそのままタイマーになっている（インディゴの地）
+  （B の赤い地はやめた。インディゴの地のタイマーは本体のアイコン tools/make_icon.py）
   python3 design/candidates/make_candidates.py
 """
 import json
 import math
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+import glyphs
 
 OUT = Path(__file__).resolve().parent
 PHI = (1 + 5 ** 0.5) / 2
@@ -45,14 +49,6 @@ def stadium(x, y, w, h):
     r = w / 2
     return (f"M{f(x)},{f(y + r)} A{f(r)},{f(r)} 0 0 1 {f(x + w)},{f(y + r)} "
             f"L{f(x + w)},{f(y + h - r)} A{f(r)},{f(r)} 0 0 1 {f(x)},{f(y + h - r)} Z")
-
-
-def one(x, top, h, t, flag):
-    """「1」：x は軸の左端。旗は左下へ傾き 1:φ"""
-    ang = 180 - math.degrees(math.atan2(1, PHI))
-    return (f'<path fill="#000" d="{stadium(x, top, t, h)}"/>'
-            f'<rect x="{f(x + t / 2)}" y="{f(top)}" width="{f(flag * PHI)}" height="{f(t)}" rx="{f(t / 2)}" fill="#000" '
-            f'transform="rotate({f(ang)} {f(x + t / 2)} {f(top + t / 2)})"/>')
 
 
 def zero(x, top, w, h, t):
@@ -93,9 +89,9 @@ def write_icon(name, bg, groups, layers):
     (d / "icon.json").write_text(json.dumps(doc, indent=2) + "\n")
 
 
-INK = (0.20, 0.17, 0.27)
+INDIGO = (0.19, 0.23, 0.55)
 WHITE = (1, 1, 1)
-RED = (1.0, 0.33, 0.30)
+AMBER = (1.0, 0.76, 0.27)
 
 # ---- A と B：今のタイマーと同じ構図（外枠の直径 = 幅 ÷ φ、太さ = 半径 ÷ φ³、「10」の高さ = 内径 ÷ φ）
 R_OUT = S / PHI / 2
@@ -107,26 +103,23 @@ CX = S / 2
 CY = S / 2 + ((CH + SH + 2 * R_OUT) / 2 - R_OUT)
 H = 2 * R_IN / PHI
 W0, T = H / PHI, H / PHI ** 3
-GAP, FLAG = T / PHI, (H / PHI) / PHI ** 2
+GAP, FLAG = T / PHI, glyphs.one_flag_width(H, T)
 tw = FLAG + T + GAP + W0
 x1 = CX - tw / 2 + FLAG
 timer_layers = {
-    "digits": one(x1, CY - H / 2, H, T, FLAG) + zero(x1 + T + GAP, CY - H / 2, W0, H, T),
+    "digits": glyphs.one(x1, CY - H / 2, H, T) + zero(x1 + T + GAP, CY - H / 2, W0, H, T),
     "progress": arc(CX, CY, R_IN, R_OUT, -90, -30),
     "crown": crown(CX, CY - R_OUT, W, CW, CH, SW, SH),
     "ring": ring(CX, CY, R_OUT, R_IN),
 }
-write_icon("A-white", (0.98, 0.97, 1.0),
-           [[("digits", INK)], [("progress", RED), ("crown", INK), ("ring", (0.88, 0.85, 0.95), False)]],
-           timer_layers)
-write_icon("B-red", (0.96, 0.33, 0.30),
-           [[("digits", WHITE)], [("progress", WHITE), ("crown", WHITE), ("ring", (1.0, 0.55, 0.52), False)]],
+write_icon("A-white", (0.98, 0.98, 1.0),
+           [[("digits", INDIGO)], [("progress", AMBER), ("crown", INDIGO), ("ring", (0.86, 0.88, 0.97), False)]],
            timer_layers)
 
 # ---- C：「1」＋ストップウォッチの「0」
 D = S / PHI ** 1.5                  # 0（ストップウォッチ）の直径 = 1 の高さ
 Tc = D / PHI ** 3.5                 # 線の太さ（外枠の太さも同じ）
-FLAGc = Tc * PHI
+FLAGc = glyphs.one_flag_width(D, Tc)
 GAPc = Tc / PHI
 twc = FLAGc + Tc + GAPc + D
 x1c = S / 2 - twc / 2 + FLAGc
@@ -135,12 +128,12 @@ crown_h = Tc + Tc / PHI
 cyc = S / 2 + crown_h / 2
 Rc = D / 2
 c_layers = {
-    "one": one(x1c, cyc - D / 2, D, Tc, FLAGc),
+    "one": glyphs.one(x1c, cyc - D / 2, D, Tc),
     "progress": arc(cxc, cyc, Rc - Tc, Rc, -90, -30),
     "crown": crown(cxc, cyc - Rc, Tc, D / PHI ** 2.5, Tc, D / PHI ** 4.5, Tc / PHI),
     "ring": ring(cxc, cyc, Rc, Rc - Tc),
 }
-write_icon("C-one-watch", (0.20, 0.17, 0.27),
-           [[("one", WHITE), ("progress", RED), ("crown", WHITE)], [("ring", WHITE, True)]],
+write_icon("C-one-watch", INDIGO,
+           [[("one", WHITE), ("progress", AMBER), ("crown", WHITE)], [("ring", WHITE, True)]],
            c_layers)
 print("ok")

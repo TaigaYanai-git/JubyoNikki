@@ -85,10 +85,18 @@ final class ThemeStore: ObservableObject {
     var showsDots: Bool { background == .dots }
 
     var accent: ThemeAccent {
-        Self.accents[Self.accents.indices.contains(accentIndex) ? accentIndex : 0]
+        Self.accents.first { $0.id == accentIndex } ?? Self.accents[0]
     }
 
+    /// 初期値のテーマカラー。日記は夜に一人で書くもので、深い青（インディゴ）は落ち着き・内省・秘密を守る信頼を連想させる
+    static let defaultAccent = 7
+
+    // 並びは設定の選択肢の順（id は保存する値なので変えない）
     static let accents: [ThemeAccent] = [
+        ThemeAccent(id: 7, name: "インディゴ",
+                    primary: Color(red: 0.22, green: 0.28, blue: 0.62),
+                    primaryEnd: Color(red: 0.40, green: 0.47, blue: 0.82),
+                    primaryBg: Color(red: 0.90, green: 0.92, blue: 0.98)),
         ThemeAccent(id: 0, name: "ブラック",
                     primary: Color(red: 0.22, green: 0.22, blue: 0.25),
                     primaryEnd: Color(red: 0.40, green: 0.40, blue: 0.44),
@@ -121,7 +129,7 @@ final class ThemeStore: ObservableObject {
 
     private init() {
         let ud = UserDefaults.standard
-        accentIndex = ud.integer(forKey: "accent")
+        accentIndex = ud.object(forKey: "accent") as? Int ?? Self.defaultAccent
         isDark = ud.bool(forKey: "isDark")
         background = AppBackground(rawValue: ud.integer(forKey: "background")) ?? .white
     }

@@ -16,6 +16,10 @@
 Icon Composer は stroke を面として扱うので、輪や数字はすべて塗りの図形（evenodd）で描く。
 """
 import json
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parent))
+import glyphs
 import math
 import sys
 from pathlib import Path
@@ -43,7 +47,7 @@ H = 2 * R_IN / PHI                  # 「10」の高さ
 W0 = H / PHI                        # 「0」の幅
 T = H / PHI ** 3                    # 線の太さ
 GAP = T / PHI
-FLAG = W0 / PHI ** 2                # 「1」の旗の横の長さ
+FLAG = glyphs.one_flag_width(H, T)  # 「1」の旗が軸から左へ出る長さ（旗の長さ = 高さ ÷ φ²、傾き 1:φ）
 ARC = 60                            # 10 秒（60 秒盤の 1/6）
 
 
@@ -91,11 +95,7 @@ x0 = x1 + T + GAP                   # 「0」の左端
 top = CY - H / 2
 
 # 「1」：軸と、左下へ伸びる旗（軸の上端から 角度 atan(1/φ) で下がる、端の丸い棒）
-flag_len = FLAG * PHI
-flag_ang = 180 - math.degrees(math.atan2(1, PHI))  # 左下向き（傾き 1:φ）
-one = (f'<path fill="#000" d="{stadium(x1, top, T, H)}"/>'
-       f'<rect x="{f(x1 + T / 2)}" y="{f(top)}" width="{f(flag_len)}" height="{f(T)}" rx="{f(T / 2)}" fill="#000" '
-       f'transform="rotate({f(flag_ang)} {f(x1 + T / 2)} {f(top + T / 2)})"/>')
+one = glyphs.one(x1, top, H, T)  # 一筆で書いた「1」（角と端が丸い）
 zero = (f'<path fill="#000" fill-rule="evenodd" d="{stadium(x0, top, W0, H)} '
         f'{stadium(x0 + T, top + T, W0 - 2 * T, H - 2 * T)}"/>')
 
@@ -122,10 +122,11 @@ def solid(light, dark):
 
 
 # 暗い地に白い「10」、10 秒の弧だけ赤（ストップウォッチの針の色）。ライトもダークも同じ配色
-BG_TOP = (0.20, 0.17, 0.27)
+# 深いインディゴの地（夜・内省・信頼）に白い「10」、10 秒の弧は琥珀色（青の補色で、夜の灯りの色）
+BG_TOP = (0.19, 0.23, 0.55)    # #303B8C
 WHITE = (1.0, 1.0, 1.0)
-RED = (1.0, 0.33, 0.30)
-TRACK = (0.33, 0.30, 0.40)     # 外枠の残り
+AMBER = (1.0, 0.76, 0.27)      # 琥珀 #FFC145
+TRACK = (0.31, 0.36, 0.68)     # 外枠の残り
 
 
 def layer(name, light, dark, glass=True):
@@ -143,7 +144,7 @@ doc = {
         {"layers": [layer("digits", WHITE, WHITE)],
          "shadow": {"kind": "neutral", "opacity": 0.35},
          "translucency": {"enabled": False, "value": 0}},
-        {"layers": [layer("progress", RED, RED), layer("crown", WHITE, WHITE),
+        {"layers": [layer("progress", AMBER, AMBER), layer("crown", WHITE, WHITE),
                     layer("ring", TRACK, TRACK, glass=False)],
          "shadow": {"kind": "neutral", "opacity": 0.3},
          "translucency": {"enabled": False, "value": 0}},
