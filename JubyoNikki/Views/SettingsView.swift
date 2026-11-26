@@ -36,23 +36,12 @@ struct SettingsView: View {
                             .font(.footnote).foregroundColor(.dlTextSub).padding(.horizontal, 4)
                     }
 
+                    // テーマカラーと背景テーマは Our Music の設定画面と同じ形
                     section("テーマカラー").padding(.top, 10)
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 14) {
-                            ForEach(ThemeStore.accents) { a in
-                                Button { theme.accentIndex = a.id } label: {
-                                    VStack(spacing: 6) {
-                                        ZStack {
-                                            Circle().fill(a.primary).frame(width: 52, height: 52)
-                                            if theme.accentIndex == a.id {
-                                                Image(systemName: "checkmark").font(.system(size: 20, weight: .bold)).foregroundColor(.white)
-                                            }
-                                        }
-                                        Text(a.name).font(.caption2)
-                                            .foregroundColor(theme.accentIndex == a.id ? .dlText : .dlTextSub)
-                                    }
-                                }
-                                .buttonStyle(.plain)
+                        HStack(spacing: 12) {
+                            ForEach(ThemeStore.accents) { accent in
+                                accentButton(accent)
                             }
                         }
                         .padding(.horizontal, 24)
@@ -60,23 +49,9 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, -20)
 
-                    section("背景").padding(.top, 10)
-                    HStack(spacing: 12) {
-                        ForEach(AppBackground.allCases) { bg in
-                            Button { theme.background = bg } label: {
-                                VStack(spacing: 6) {
-                                    BackgroundSwatch(kind: bg)
-                                        .frame(height: 64)
-                                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                                        .overlay(RoundedRectangle(cornerRadius: 14)
-                                            .strokeBorder(theme.background == bg ? Color.dlText : Color.dlDivider,
-                                                          lineWidth: theme.background == bg ? 2.5 : 1))
-                                    Text(bg.label).font(.caption)
-                                        .foregroundColor(theme.background == bg ? .dlText : .dlTextSub)
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
+                    section("背景テーマ").padding(.top, 10)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), spacing: 10) {
+                        ForEach(BgPattern.allCases, id: \.rawValue) { bgPatternButton($0) }
                     }
 
                     VStack(spacing: 14) {
@@ -119,32 +94,60 @@ struct SettingsView: View {
         }
     }
 
-    private func section(_ title: String) -> some View {
-        Text(title).font(.headline).foregroundColor(.dlTextSub).padding(.leading, 4)
-    }
-}
-
-/// 背景の見本（設定の選択肢）
-private struct BackgroundSwatch: View {
-    let kind: AppBackground
-    var body: some View {
-        ZStack {
-            Color.dlCard
-            if kind != .white { Color(red: 0.969, green: 0.957, blue: 0.988) }
-            if kind == .dots {
-                Canvas { ctx, size in
-                    var y: CGFloat = 8, row = 0
-                    while y < size.height {
-                        var x: CGFloat = row % 2 == 0 ? 8 : 16
-                        while x < size.width {
-                            ctx.fill(Path(ellipseIn: CGRect(x: x - 2.5, y: y - 2.5, width: 5, height: 5)),
-                                     with: .color(Color.dlPrimary.opacity(0.12)))
-                            x += 16
-                        }
-                        y += 14; row += 1
+    private func accentButton(_ accent: ThemeAccent) -> some View {
+        let selected = theme.accentIndex == accent.id
+        return Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { theme.accentIndex = accent.id }
+        } label: {
+            VStack(spacing: 5) {
+                ZStack {
+                    Circle()
+                        .fill(accent.primary)
+                        .frame(width: 36, height: 36)
+                        .overlay(Circle().strokeBorder(Color.dlDivider, lineWidth: accent.needsBorder ? 1.5 : 0))
+                        .shadow(color: accent.primary.opacity(selected ? 0.5 : 0.18), radius: selected ? 8 : 3, y: 2)
+                    if selected {
+                        Image(systemName: "checkmark")
+                            .font(.caption2.weight(.bold))
+                            .foregroundColor(accent.needsBorder ? Color.dlText : .white)
                     }
                 }
+                .scaleEffect(selected ? 1.12 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: theme.accentIndex)
+                Text(accent.name)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(selected ? .dlPrimary : .dlTextSub)
             }
         }
+        .buttonStyle(.plain)
+    }
+
+    private func bgPatternButton(_ pattern: BgPattern) -> some View {
+        let selected = theme.bgPatternIndex == pattern.rawValue
+        return Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { theme.bgPatternIndex = pattern.rawValue }
+        } label: {
+            VStack(spacing: 6) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10).fill(Color.dlCard).frame(width: 72, height: 48)
+                    if pattern != .none {
+                        AppBackgroundPattern(patternIndex: pattern.rawValue, primary: theme.accent.primary)
+                            .frame(width: 72, height: 48)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(selected ? Color.dlPrimary : Color.dlDivider, lineWidth: selected ? 2 : 1)
+                        .frame(width: 72, height: 48)
+                }
+                Text(pattern.label)
+                    .font(.caption.weight(selected ? .semibold : .regular))
+                    .foregroundColor(selected ? .dlPrimary : .dlTextSub)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func section(_ title: String) -> some View {
+        Text(title).font(.headline).foregroundColor(.dlTextSub).padding(.leading, 4)
     }
 }

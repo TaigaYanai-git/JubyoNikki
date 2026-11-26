@@ -108,8 +108,6 @@ struct CalendarView: View {
                     .fill(e != nil
                           ? AnyShapeStyle(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing))
                           : AnyShapeStyle(Color.dlCard.opacity(future ? 0.4 : 1)))
-                    .overlay(RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(Color.dlDivider.opacity(e == nil && !future ? 1 : 0), lineWidth: 1))
                 Text("\(cal.component(.day, from: d))")
                     .font(.caption.weight(.bold))
                     .foregroundColor(e != nil ? .white : (future ? .dlTextLight.opacity(0.6) : .dlTextLight))
