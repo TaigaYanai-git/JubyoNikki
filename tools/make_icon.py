@@ -6,7 +6,7 @@
 絵柄：ストップウォッチの文字盤に「10」。外枠の 1/6（＝60 秒盤の 10 秒）だけ濃く塗る。
 寸法はすべて黄金比 φ から決める（φ = 1.618…）。
   - 外枠の直径      = アイコンの幅 ÷ φ
-  - 外枠の太さ      = 外枠の半径 ÷ φ⁴
+  - 外枠の太さ      = 外枠の半径 ÷ φ³
   - 「10」の高さ    = 外枠の内径 ÷ φ
   - 「0」の幅       = 「10」の高さ ÷ φ（φ の長方形）
   - 数字の線の太さ  = 「10」の高さ ÷ φ³
@@ -28,7 +28,7 @@ PHI = (1 + 5 ** 0.5) / 2
 S = 1024
 
 R_OUT = S / PHI / 2                 # 316.4
-W_RING = R_OUT / PHI ** 4           # 46.2
+W_RING = R_OUT / PHI ** 3           # 74.7（はっきり見えるよう太め）
 R_IN = R_OUT - W_RING
 CROWN_W = R_OUT / PHI ** 2          # 120.9
 CROWN_H = W_RING
@@ -121,10 +121,11 @@ def solid(light, dark):
     return [{"value": {"solid": srgb(light)}}, {"appearance": "dark", "value": {"solid": srgb(dark)}}]
 
 
-INK = (0.18, 0.145, 0.25)      # Our Music の文字色 #2E2540
-PAPER = (0.93, 0.90, 0.97)
-TRACK = (0.86, 0.82, 0.95)     # 外枠の残り（淡いラベンダー）
-TRACK_DARK = (0.30, 0.26, 0.40)
+# 暗い地に白い「10」、10 秒の弧だけ赤（ストップウォッチの針の色）。ライトもダークも同じ配色
+BG_TOP = (0.20, 0.17, 0.27)
+WHITE = (1.0, 1.0, 1.0)
+RED = (1.0, 0.33, 0.30)
+TRACK = (0.33, 0.30, 0.40)     # 外枠の残り
 
 
 def layer(name, light, dark, glass=True):
@@ -135,17 +136,17 @@ def layer(name, light, dark, glass=True):
 
 doc = {
     "fill-specializations": [
-        {"value": {"automatic-gradient": "srgb:1.00000,1.00000,1.00000,1.00000"}},
-        {"appearance": "dark", "value": {"automatic-gradient": "srgb:0.16000,0.14000,0.21000,1.00000"}},
+        {"value": {"automatic-gradient": srgb(BG_TOP)}},
+        {"appearance": "dark", "value": {"automatic-gradient": srgb(BG_TOP)}},
     ],
     "groups": [
-        {"layers": [layer("digits", INK, PAPER)],
-         "shadow": {"kind": "neutral", "opacity": 0.5},
-         "translucency": {"enabled": True, "value": 0.4}},
-        {"layers": [layer("progress", INK, PAPER), layer("crown", INK, PAPER),
-                    layer("ring", TRACK, TRACK_DARK, glass=False)],
-         "shadow": {"kind": "neutral", "opacity": 0.4},
-         "translucency": {"enabled": True, "value": 0.5}},
+        {"layers": [layer("digits", WHITE, WHITE)],
+         "shadow": {"kind": "neutral", "opacity": 0.35},
+         "translucency": {"enabled": False, "value": 0}},
+        {"layers": [layer("progress", RED, RED), layer("crown", WHITE, WHITE),
+                    layer("ring", TRACK, TRACK, glass=False)],
+         "shadow": {"kind": "neutral", "opacity": 0.3},
+         "translucency": {"enabled": False, "value": 0}},
     ],
     "supported-platforms": {"circles": ["watchOS"], "squares": "shared"},
 }

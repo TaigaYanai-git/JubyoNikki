@@ -60,11 +60,26 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, -20)
 
-                    VStack(spacing: 14) {
-                        SettingRow(icon: "circle.grid.3x3", title: "水玉の背景") {
-                            Toggle("", isOn: $theme.showsDots).labelsHidden().tint(.dlPrimary)
+                    section("背景").padding(.top, 10)
+                    HStack(spacing: 12) {
+                        ForEach(AppBackground.allCases) { bg in
+                            Button { theme.background = bg } label: {
+                                VStack(spacing: 6) {
+                                    BackgroundSwatch(kind: bg)
+                                        .frame(height: 64)
+                                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                                        .overlay(RoundedRectangle(cornerRadius: 14)
+                                            .strokeBorder(theme.background == bg ? Color.dlText : Color.dlDivider,
+                                                          lineWidth: theme.background == bg ? 2.5 : 1))
+                                    Text(bg.label).font(.caption)
+                                        .foregroundColor(theme.background == bg ? .dlText : .dlTextSub)
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
-                        Divider().overlay(Color.dlDivider)
+                    }
+
+                    VStack(spacing: 14) {
                         SettingRow(icon: "moon", title: "ダークモード") {
                             Toggle("", isOn: $theme.isDark).labelsHidden().tint(.dlPrimary)
                         }
@@ -106,5 +121,30 @@ struct SettingsView: View {
 
     private func section(_ title: String) -> some View {
         Text(title).font(.headline).foregroundColor(.dlTextSub).padding(.leading, 4)
+    }
+}
+
+/// 背景の見本（設定の選択肢）
+private struct BackgroundSwatch: View {
+    let kind: AppBackground
+    var body: some View {
+        ZStack {
+            Color.dlCard
+            if kind != .white { Color(red: 0.969, green: 0.957, blue: 0.988) }
+            if kind == .dots {
+                Canvas { ctx, size in
+                    var y: CGFloat = 8, row = 0
+                    while y < size.height {
+                        var x: CGFloat = row % 2 == 0 ? 8 : 16
+                        while x < size.width {
+                            ctx.fill(Path(ellipseIn: CGRect(x: x - 2.5, y: y - 2.5, width: 5, height: 5)),
+                                     with: .color(Color.dlPrimary.opacity(0.12)))
+                            x += 16
+                        }
+                        y += 14; row += 1
+                    }
+                }
+            }
+        }
     }
 }

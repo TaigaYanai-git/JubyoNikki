@@ -5,11 +5,15 @@ import UIKit
 // 薄いラベンダーの背景に水玉、白いカード、テーマカラーのグラデーションのボタン。
 
 extension Color {
-    static let dlBg = Color(UIColor { t in
-        t.userInterfaceStyle == .dark
-            ? UIColor(red: 0.11, green: 0.09, blue: 0.14, alpha: 1)
-            : UIColor(red: 0.969, green: 0.957, blue: 0.988, alpha: 1)
-    })
+    /// 画面の背景。ライトでは「白」（初期値）か、Our Music と同じ薄いラベンダー
+    static var dlBg: Color {
+        let lavender = ThemeStore.shared.background != .white
+        return Color(UIColor { t in
+            t.userInterfaceStyle == .dark
+                ? UIColor(red: 0.11, green: 0.09, blue: 0.14, alpha: 1)
+                : (lavender ? UIColor(red: 0.969, green: 0.957, blue: 0.988, alpha: 1) : .white)
+        })
+    }
     static let dlCard = Color(UIColor { t in
         t.userInterfaceStyle == .dark
             ? UIColor(red: 0.15, green: 0.13, blue: 0.22, alpha: 1)
@@ -46,6 +50,18 @@ extension Color {
     static var dlPrimaryBg: Color { ThemeStore.shared.accent.primaryBg }
 }
 
+enum AppBackground: Int, CaseIterable, Identifiable {
+    case white = 0, lavender = 1, dots = 2
+    var id: Int { rawValue }
+    var label: String {
+        switch self {
+        case .white: return "白"
+        case .lavender: return "ラベンダー"
+        case .dots: return "水玉"
+        }
+    }
+}
+
 struct ThemeAccent: Identifiable {
     let id: Int
     let name: String
@@ -63,9 +79,10 @@ final class ThemeStore: ObservableObject {
     @Published var isDark: Bool {
         didSet { UserDefaults.standard.set(isDark, forKey: "isDark") }
     }
-    @Published var showsDots: Bool {
-        didSet { UserDefaults.standard.set(showsDots, forKey: "showsDots") }
+    @Published var background: AppBackground {
+        didSet { UserDefaults.standard.set(background.rawValue, forKey: "background") }
     }
+    var showsDots: Bool { background == .dots }
 
     var accent: ThemeAccent {
         Self.accents[Self.accents.indices.contains(accentIndex) ? accentIndex : 0]
@@ -106,7 +123,7 @@ final class ThemeStore: ObservableObject {
         let ud = UserDefaults.standard
         accentIndex = ud.integer(forKey: "accent")
         isDark = ud.bool(forKey: "isDark")
-        showsDots = ud.object(forKey: "showsDots") as? Bool ?? true
+        background = AppBackground(rawValue: ud.integer(forKey: "background")) ?? .white
     }
 }
 
@@ -158,12 +175,15 @@ struct SecondaryButtonStyle: ButtonStyle {
 
 struct CardModifier: ViewModifier {
     var padding: CGFloat = 16
+    @ObservedObject private var theme = ThemeStore.shared
     func body(content: Content) -> some View {
         content
             .padding(padding)
             .background(Color.dlCard)
             .cornerRadius(20)
-            .shadow(color: .black.opacity(0.05), radius: 12, x: 0, y: 4)
+            .overlay(RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(Color.dlDivider, lineWidth: theme.background == .white ? 1 : 0))
+            .shadow(color: .black.opacity(theme.background == .white ? 0.04 : 0.05), radius: 12, x: 0, y: 4)
     }
 }
 
