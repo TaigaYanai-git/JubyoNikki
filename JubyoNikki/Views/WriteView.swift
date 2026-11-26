@@ -11,6 +11,10 @@ struct WriteView: View {
 
     static let baseSeconds: Double = 10
 
+    /// 書く日（ふだんは今日。広告を見て昨日を取り戻すときは昨日）
+    var dayKey: String = Day.key()
+    var recovering = false
+
     @State private var text = ""
     @State private var start = Date()
     @State private var deadline = Date().addingTimeInterval(WriteView.baseSeconds)
@@ -27,7 +31,7 @@ struct WriteView: View {
     private let ticker = Timer.publish(every: 1.0 / 30, on: .main, in: .common).autoconnect()
     private let haptic = UIImpactFeedbackGenerator(style: .soft)
 
-    private var todayKey: String { Day.key() }
+    private var todayKey: String { dayKey }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
     private var remaining: Double { max(0, deadline.timeIntervalSince(now)) }
     private var gained: Int { maxCount - baseCount }
@@ -80,9 +84,16 @@ struct WriteView: View {
                     .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
             }
             Spacer()
-            Text(Day.label(Date()))
-                .font(.headline)
-                .foregroundColor(.dlText)
+            VStack(spacing: 2) {
+                Text(Day.label(Day.date(from: dayKey) ?? Date()))
+                    .font(.headline)
+                    .foregroundColor(.dlText)
+                if recovering {
+                    Text("昨日の日記")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(.dlPrimary)
+                }
+            }
             Spacer()
             Color.clear.frame(width: 44, height: 44)
         }
@@ -228,7 +239,9 @@ struct WriteView: View {
                 existing.updatedAt = Date()
             }
         } else if !body.isEmpty {
-            context.insert(DiaryEntry(dayKey: todayKey, text: body, seconds: used))
+            let entry = DiaryEntry(dayKey: todayKey, text: body, seconds: used)
+            entry.recovered = recovering
+            context.insert(entry)
         }
         try? context.save()
         Task { await Reminder.shared.reschedule() }

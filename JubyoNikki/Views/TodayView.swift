@@ -5,6 +5,8 @@ struct TodayView: View {
     @Query(sort: \DiaryEntry.dayKey, order: .reverse) private var entries: [DiaryEntry]
     @ObservedObject private var theme = ThemeStore.shared
     @ObservedObject private var reminder = Reminder.shared
+    @ObservedObject private var ads = RewardedAds.shared
+    @State private var showRecover = false
     @Binding var showWrite: Bool
 
     private var today: DiaryEntry? { entries.first { $0.dayKey == Day.key() } }
@@ -20,6 +22,7 @@ struct TodayView: View {
                         .foregroundColor(.dlText)
                         .padding(.top, 4)
                     if let today { writtenCard(today) } else { startCard }
+                    if canRecover { recoverCard }
                     if reminder.notAsked { askCard }
                     statsCard
                     if !entries.filter({ $0.dayKey != Day.key() }).isEmpty { recent }
@@ -28,6 +31,73 @@ struct TodayView: View {
                 .padding(.bottom, 32)
             }
             .dlScreen("今日")
+            .fullScreenCover(isPresented: $showRecover) {
+                WriteView(dayKey: yesterdayKey, recovering: true)
+            }
+        }
+    }
+
+    private var yesterdayKey: String {
+        Day.key(Calendar.current.date(byAdding: .day, value: -1, to: Date())!)
+    }
+
+    /// 昨日が空いていて、それより前に1日でも書いている人だけ（始めたばかりの人には出さない）
+    private var canRecover: Bool {
+        ads.isAvailable
+            && !entries.contains { $0.dayKey == yesterdayKey }
+            && entries.contains { $0.dayKey < yesterdayKey }
+    }
+
+    /// 前の日まで続いていれば、昨日を書くと連続がつながる
+    private var wouldReconnect: Bool {
+        let before = Day.key(Calendar.current.date(byAdding: .day, value: -2, to: Date())!)
+        return entries.contains { $0.dayKey == before }
+    }
+
+    /// 広告を見て昨日を取り戻す
+    private var recoverCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.uturn.backward")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.dlPrimary)
+                    .frame(width: 44, height: 44)
+                    .background(Color.dlPrimaryBg)
+                    .cornerRadius(12)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("昨日の日記がありません").font(.headline).foregroundColor(.dlText)
+                    Text(wouldReconnect ? "広告を見ると、昨日の分を10秒で書けます。連続記録がつながります。"
+                                        : "広告を見ると、昨日の分を10秒で書けます。")
+                        .font(.caption).foregroundColor(.dlTextSub)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Button {
+                Task {
+                    await ads.show { ok in if ok { showRecover = true } }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    if ads.isLoading { ProgressView().tint(.dlPrimary) }
+                    else { Image(systemName: "play.rectangle") }
+                    Text("広告を見て昨日を書く")
+                }
+            }
+            .buttonStyle(SecondaryButtonStyle())
+            .disabled(ads.isLoading)
+            if let message = ads.errorMessage {
+                Text(message).font(.caption).foregroundColor(.dlTextSub)
+            }
+        }
+        .dlCard(padding: 18)
+        .task {
+            await ads.preload()
+            #if DEBUG
+            // -autoRecover：確認用。カードのボタンを押したのと同じ流れを自動で通す
+            if ProcessInfo.processInfo.arguments.contains("-autoRecover") {
+                await ads.show { ok in if ok { showRecover = true } }
+            }
+            #endif
         }
     }
 

@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		3093DA6A88EDF7D3DF833EF2 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D82F60A8120D4872F44F11 /* CalendarView.swift */; };
 		3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */; };
+		486DF1410B82938010344CB1 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 723227255C95839267399F10 /* GoogleMobileAds */; };
 		590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */; };
 		5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4C2B9E5B04A6888BDA632724 /* AppIcon.icon */; };
 		7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */; };
 		BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0995464BBCC4D59E5D6A29CF /* SettingsView.swift */; };
+		D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */; };
 		D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821E372AF4D1359A6B242F31 /* Theme.swift */; };
 		DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D764E4B38C2A0665FA050FE8 /* WriteView.swift */; };
 		E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E8ADA7363799F1B19AABC5 /* Reminder.swift */; };
@@ -23,14 +25,27 @@
 		270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JubyoNikkiApp.swift; sourceTree = "<group>"; };
 		4C2B9E5B04A6888BDA632724 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		790BB9CB2BB91B8417E9BA97 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardedAds.swift; sourceTree = "<group>"; };
 		821E372AF4D1359A6B242F31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		A0D82F60A8120D4872F44F11 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JubyoNikki.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
+		D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Ads.xcconfig; sourceTree = "<group>"; };
 		D764E4B38C2A0665FA050FE8 /* WriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteView.swift; sourceTree = "<group>"; };
 		E7E8ADA7363799F1B19AABC5 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CEA8C7CD4DE827D8E0117D8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				486DF1410B82938010344CB1 /* GoogleMobileAds in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0C85C23DAAFF14094C4B0D84 /* Views */ = {
@@ -49,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				E7E8ADA7363799F1B19AABC5 /* Reminder.swift */,
+				80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -80,6 +96,7 @@
 		9BB4084FB25603925DD0E4AC = {
 			isa = PBXGroup;
 			children = (
+				F9168BE6A3CD675FDD512BED /* Config */,
 				B5E3146FF74B2C96CECCBADF /* JubyoNikki */,
 				3EA7CE4B6BE81D3D498B3675 /* Products */,
 			);
@@ -98,6 +115,14 @@
 			path = JubyoNikki;
 			sourceTree = "<group>";
 		};
+		F9168BE6A3CD675FDD512BED /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -107,6 +132,7 @@
 			buildPhases = (
 				C0CDF31F777A5F9E996E4A09 /* Sources */,
 				FBB53D625B4F4BF29710F643 /* Resources */,
+				CEA8C7CD4DE827D8E0117D8E /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -114,6 +140,7 @@
 			);
 			name = JubyoNikki;
 			packageProductDependencies = (
+				723227255C95839267399F10 /* GoogleMobileAds */,
 			);
 			productName = JubyoNikki;
 			productReference = A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */;
@@ -143,6 +170,9 @@
 			);
 			mainGroup = 9BB4084FB25603925DD0E4AC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				30251E590C2ABE8BBA7216EB /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3EA7CE4B6BE81D3D498B3675 /* Products */;
 			projectDirPath = "";
@@ -173,6 +203,7 @@
 				590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */,
 				3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */,
 				E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */,
+				D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */,
 				BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */,
 				D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */,
 				7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */,
@@ -185,6 +216,7 @@
 /* Begin XCBuildConfiguration section */
 		1D2CF5E8F01FAF15E9A5AD34 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -261,6 +293,7 @@
 		};
 		813653054B9D989077CEE593 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -364,6 +397,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		30251E590C2ABE8BBA7216EB /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		723227255C95839267399F10 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30251E590C2ABE8BBA7216EB /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 478350FCD658B7E897708EED /* Project object */;
 }

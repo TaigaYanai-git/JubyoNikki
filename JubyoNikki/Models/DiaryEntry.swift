@@ -9,6 +9,8 @@ final class DiaryEntry {
     var seconds: Double = 0
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
+    /// 広告を見て後から書いた日（カレンダーに印を出す）
+    var recovered: Bool = false
 
     init(dayKey: String, text: String, seconds: Double) {
         self.dayKey = dayKey

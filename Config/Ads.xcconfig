@@ -1,0 +1,8 @@
+// AdMob の ID。xcconfig では "//" がコメントになるので ID だけを書く。
+// 開発中（Debug）は Google の公式テスト用 ID（自分で本番の広告を表示・タップするとポリシー違反になるため）。
+ADMOB_APP_ID = ca-app-pub-3940256099942544~1458002511
+ADMOB_REWARDED_UNIT_ID = ca-app-pub-3940256099942544/1712485313
+
+// App Store に出すビルド（Release）。AdMob でこのアプリと広告ユニット（リワード）を作ったら入れる。
+// 空のあいだは「昨日を取り戻す」カードを出さない（アプリ ID だけはテスト用を残す。空だと SDK が起動時に止まるため）。
+ADMOB_REWARDED_UNIT_ID[config=Release] =

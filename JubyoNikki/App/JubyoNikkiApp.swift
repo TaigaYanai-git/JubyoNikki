@@ -83,7 +83,9 @@ enum Demo {
             "コーヒーをこぼした",
         ]
         let cal = Calendar.current
-        for (i, line) in lines.enumerated() where !line.isEmpty {
+        // -demoMiss：昨日を空けて「昨日を取り戻す」カードを出す
+        let miss = ProcessInfo.processInfo.arguments.contains("-demoMiss")
+        for (i, line) in lines.enumerated() where !line.isEmpty && !(miss && i == 0) {
             let d = cal.date(byAdding: .day, value: -(i + 1), to: Date())!
             context.insert(DiaryEntry(dayKey: Day.key(d), text: line, seconds: 10 + Double(line.count)))
         }
