@@ -64,7 +64,7 @@ struct SettingsView: View {
 
                     section("このアプリについて").padding(.top, 10)
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("忙しい日も、やる気のない日も。\n10秒だけなら続けられる日記です。書いている間は時計が戻ります（最大10秒）。日記はこの iPhone の中にだけ保存されます。")
+                        Text("忙しい日も、やる気のない日も。\n10秒だけなら続けられる日記です。書いている間は時計がゆっくり進みます。日記はこの iPhone の中にだけ保存されます。")
                             .font(.subheadline).foregroundColor(.dlText)
                         Text("バージョン \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
                             .font(.caption).foregroundColor(.dlTextSub)

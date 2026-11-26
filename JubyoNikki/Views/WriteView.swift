@@ -2,15 +2,17 @@ import SwiftData
 import SwiftUI
 import UIKit
 
-/// 10 秒だけ書ける画面。書いている間（最後に打ってから freeze 秒）は時計が反転して
-/// 持ち時間が増え（最大 10 秒、ゲージは緑）、手が止まっている間だけ減る。
-/// 文字数を数えないので、変換・予測変換・削除のどれでも同じように増える。
+/// 10 秒だけ書ける画面。書いている間（最後に打ってから freeze 秒）は時計がスローになり
+/// （slowRate 倍の速さで減る。ゲージは緑）、手が止まっている間はふつうに減る。
+/// 文字数を数えないので、変換・予測変換・削除のどれでも同じようにスローになる。
 struct WriteView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Query private var entries: [DiaryEntry]
 
     static let baseSeconds: Double = 10
+    /// 書いている間の時計の速さ（ふつうの何倍か）
+    static let slowRate: Double = 0.25
     /// 最後に打ってから「書いている」とみなす時間
     static let freeze: Double = 1.2
 
@@ -25,12 +27,12 @@ struct WriteView: View {
     @State private var text = ""
     @State private var start = Date()
     @State private var now = Date()
-    /// 残りの持ち時間（書いている間は増え、手が止まっているときは減る。最大 baseSeconds）
+    /// 残りの持ち時間（書いている間はゆっくり、手が止まっているときはふつうに減る）
     @State private var remaining = WriteView.baseSeconds
     @State private var lastTick = Date()
     /// 最後に打った時刻
     @State private var lastType = Date.distantPast
-    /// 書いて取り戻した秒数の合計
+    /// スローのおかげで浮いた秒数の合計
     @State private var gainedTotal: Double = 0
     @State private var finished = false
     /// 書き終わったときの、書いていた秒数（書き終わりの画面に出す）
@@ -49,7 +51,7 @@ struct WriteView: View {
     private var todayKey: String { dayKey }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
     private var charCount: Int { Self.count(text) }
-    /// いま書いている最中か（時計が反転して増える）
+    /// いま書いている最中か（時計がスローになる）
     private var frozen: Bool { !finished && now.timeIntervalSince(lastType) < Self.freeze }
 
     /// 数える文字（空白と改行は数えない）
@@ -73,14 +75,11 @@ struct WriteView: View {
             let dt = t.timeIntervalSince(lastTick)
             lastTick = t
             now = t
-            if t.timeIntervalSince(lastType) < Self.freeze {
-                let gain = min(dt, Self.baseSeconds - remaining)
-                remaining += gain
-                gainedTotal += gain
-            } else {
-                remaining = max(0, remaining - dt)
-                if remaining <= 0 { finish() }
-            }
+            let slow = t.timeIntervalSince(lastType) < Self.freeze
+            let rate = slow ? Self.slowRate : 1
+            if slow { gainedTotal += dt * (1 - rate) }
+            remaining = max(0, remaining - dt * rate)
+            if remaining <= 0 { finish() }
         }
     }
 
@@ -140,12 +139,12 @@ struct WriteView: View {
                     .font(.system(size: 58, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundColor(frozen ? Self.green : urgent ? Color(red: 0.88, green: 0.36, blue: 0.40) : .dlText)
-                    .contentTransition(.numericText(countsDown: !frozen))
+                    .contentTransition(.numericText(countsDown: true))
                     .animation(.snappy, value: Int(ceil(remaining)))
-                // 書いている間は「戻っています」、手が止まっている間は「秒」
+                // 書いている間は「スロー」、手が止まっている間は「秒」
                 HStack(spacing: 3) {
-                    if frozen { Image(systemName: "arrow.counterclockwise").font(.system(size: 9, weight: .bold)) }
-                    Text(frozen ? (remaining >= Self.baseSeconds ? "満タン" : "戻っています") : "秒")
+                    if frozen { Image(systemName: "tortoise.fill").font(.system(size: 10, weight: .bold)) }
+                    Text(frozen ? "スロー" : "秒")
                 }
                 .font(.caption.weight(.semibold))
                 .foregroundColor(frozen ? Self.green : .dlTextSub)
@@ -173,7 +172,7 @@ struct WriteView: View {
             HStack {
                 Text("\(charCount)文字")
                 Spacer()
-                Text("書いて戻した \(Int(gainedTotal))秒")
+                Text("書いてのばした \(Int(gainedTotal))秒")
             }
             .font(.caption.weight(.semibold))
             .foregroundColor(.dlTextSub)
@@ -183,7 +182,7 @@ struct WriteView: View {
     }
 
     private var hint: some View {
-        Text("書いている間は、時計が戻ります（最大10秒）")
+        Text("書いている間は、時計がゆっくり進みます")
             .font(.footnote)
             .foregroundColor(.dlTextSub)
             .padding(.bottom, 8)
