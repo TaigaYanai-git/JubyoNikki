@@ -2,14 +2,17 @@ import SwiftData
 import SwiftUI
 import UIKit
 
-/// 10 秒だけ書ける画面。空白以外の文字が1つ増えるたびに 1 秒のびる。
-/// 消して書き直しても秒は増えない（いちばん多かった文字数から数える）。
+/// 10 秒だけ書ける画面。書いている間（最後に打ってから freeze 秒）は時計が止まり、
+/// 手が止まっている時間だけ減る。止まっている間は輪がカクカク揺れる。
+/// 文字数を数えないので、変換・予測変換・削除のどれでも同じように止まる。
 struct WriteView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Query private var entries: [DiaryEntry]
 
     static let baseSeconds: Double = 10
+    /// 最後に打ってから時計が止まっている時間
+    static let freeze: Double = 1.2
 
     /// 書く日（ふだんは今日。広告を見て昨日を取り戻すときは昨日）
     var dayKey: String = Day.key()
@@ -21,14 +24,15 @@ struct WriteView: View {
 
     @State private var text = ""
     @State private var start = Date()
-    @State private var deadline = Date().addingTimeInterval(WriteView.baseSeconds)
     @State private var now = Date()
-    /// この回でのびた秒数（＝数えた文字数）
-    @State private var credited = 0
-    /// 削除キーなどで消した文字数の「借り」。次に増えた分からまず返す（消して書き直しても秒が増えない）
-    @State private var debt = 0
+    /// 残りの持ち時間（手が止まっているときだけ減る）
+    @State private var remaining = WriteView.baseSeconds
+    @State private var lastTick = Date()
+    /// 最後に打った時刻
+    @State private var lastType = Date.distantPast
+    /// 書いていて時計が止まっていた時間の合計
+    @State private var pausedTotal: Double = 0
     @State private var finished = false
-    @State private var bonusTick = 0
     /// 開いた時点の今日の文（10秒追加のとき。入力欄に入れて、前の文も直せる）
     @State private var original: String?
     @State private var focused = false
@@ -38,9 +42,9 @@ struct WriteView: View {
 
     private var todayKey: String { dayKey }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
-    private var remaining: Double { max(0, deadline.timeIntervalSince(now)) }
-    private var gained: Int { credited }
     private var charCount: Int { Self.count(text) }
+    /// いま時計が止まっているか（書いている最中）
+    private var frozen: Bool { !finished && now.timeIntervalSince(lastType) < Self.freeze }
 
     /// 数える文字（空白と改行は数えない）
     static func count(_ s: String) -> Int { s.filter { !$0.isWhitespace && !$0.isNewline }.count }
@@ -60,32 +64,23 @@ struct WriteView: View {
         .onAppear(perform: begin)
         .onReceive(ticker) { t in
             guard !finished else { return }
+            let dt = t.timeIntervalSince(lastTick)
+            lastTick = t
             now = t
-            if remaining <= 0 { finish() }
+            if t.timeIntervalSince(lastType) < Self.freeze {
+                pausedTotal += dt
+            } else {
+                remaining = max(0, remaining - dt)
+                if remaining <= 0 { finish() }
+            }
         }
     }
 
-    /// 文字が増えたとき（DiaryTextView から）。借りを先に返し、残りの分だけ秒をのばす。
-    /// 変換中・確定・予測変換・貼り付けの区別はしない（変換で文字数が減っても秒は返さない）
-    private func handleGrow(_ n: Int) {
-        guard !finished, n > 0 else { return }
-        let paid = min(debt, n)
-        debt -= paid
-        grant(n - paid)
-    }
-
-    /// 削除キー・切り取り・上書きで文字が消えたとき
-    private func handleRemove(_ n: Int) {
-        guard !finished, n > 0 else { return }
-        debt += n
-    }
-
-    private func grant(_ n: Int) {
-        guard n > 0 else { return }
-        deadline += Double(n)
-        credited += n
-        bonusTick += 1
-        haptic.impactOccurred(intensity: 0.6)
+    /// 打つたびに呼ぶ（DiaryTextView から。変換中の文字の変化・削除キーも含む）
+    private func typed() {
+        guard !finished else { return }
+        if !frozen { haptic.impactOccurred(intensity: 0.5) }
+        lastType = Date()
     }
 
     // MARK: 部品
@@ -121,8 +116,10 @@ struct WriteView: View {
     }
 
     private var timerRing: some View {
-        let progress = finished ? 0 : remaining / max(Self.baseSeconds, deadline.timeIntervalSince(start))
+        let progress = finished ? 0 : remaining / Self.baseSeconds
         let urgent = remaining < 3 && !finished
+        // 止まっている間はカクカク揺らす（1/20 秒ごとに左右へ）
+        let jitter: Double = frozen ? (Int(now.timeIntervalSinceReferenceDate * 20) % 2 == 0 ? 2.5 : -2.5) : 0
         return ZStack {
             Circle().stroke(Color.dlCardTint, lineWidth: 12)
             Circle()
@@ -130,7 +127,6 @@ struct WriteView: View {
                 .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
                         style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.spring(duration: 0.3), value: credited)
             VStack(spacing: 0) {
                 Text(finished ? "0" : "\(Int(ceil(remaining)))")
                     .font(.system(size: 58, weight: .bold, design: .rounded))
@@ -138,14 +134,18 @@ struct WriteView: View {
                     .foregroundColor(urgent ? Color(red: 0.88, green: 0.36, blue: 0.40) : .dlText)
                     .contentTransition(.numericText(countsDown: true))
                     .animation(.snappy, value: Int(ceil(remaining)))
-                Text("秒")
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(.dlTextSub)
+                // 止まっている間は「一時停止」、動いている間は「秒」
+                HStack(spacing: 3) {
+                    if frozen { Image(systemName: "pause.fill").font(.system(size: 9, weight: .bold)) }
+                    Text(frozen ? "止まっています" : "秒")
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundColor(frozen ? .dlPrimary : .dlTextSub)
             }
-            BonusPop(trigger: bonusTick)
-                .offset(x: 62, y: -52)
         }
         .frame(width: 150, height: 150)
+        .rotationEffect(.degrees(jitter))
+        .offset(x: jitter * 0.6)
         .padding(.top, 4)
     }
 
@@ -158,8 +158,7 @@ struct WriteView: View {
                         .padding(.top, 8)
                         .padding(.leading, 5)
                 }
-                DiaryTextView(text: $text, isEditable: !finished, focus: focused,
-                              onGrow: handleGrow, onRemove: handleRemove)
+                DiaryTextView(text: $text, isEditable: !finished, focus: focused, onType: typed)
             }
             .padding(10)
             .frame(minHeight: 120, maxHeight: finished ? 220 : .infinity)
@@ -168,7 +167,7 @@ struct WriteView: View {
             HStack {
                 Text("\(charCount)文字")
                 Spacer()
-                Text("+\(gained)秒")
+                Text("書いて止めた \(Int(pausedTotal))秒")
             }
             .font(.caption.weight(.semibold))
             .foregroundColor(.dlTextSub)
@@ -178,7 +177,7 @@ struct WriteView: View {
     }
 
     private var hint: some View {
-        Text("1文字書くと、1秒のびます")
+        Text("書いている間は、時計が止まります")
             .font(.footnote)
             .foregroundColor(.dlTextSub)
             .padding(.bottom, 8)
@@ -195,7 +194,7 @@ struct WriteView: View {
                     Text("\(Day.streak(keys: Set(entries.map(\.dayKey))))日連続")
                         .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundColor(.dlText)
-                    Text("\(Int(deadline.timeIntervalSince(start).rounded()))秒の日記を書きました")
+                    Text("\(Int((baseSecondsUsed).rounded()))秒の日記を書きました")
                         .font(.subheadline)
                         .foregroundColor(.dlTextSub)
                     if gotShiori {
@@ -223,12 +222,13 @@ struct WriteView: View {
     private func begin() {
         original = existing?.text
         text = original ?? ""
-        credited = 0
-        debt = 0
         finished = false
         start = Date()
         now = start
-        deadline = start.addingTimeInterval(Self.baseSeconds)
+        lastTick = start
+        lastType = .distantPast
+        remaining = Self.baseSeconds
+        pausedTotal = 0
         haptic.prepare()
         focused = true
         // -typeDemo：撮影用に1文字ずつ自動で書く（+1 秒の動きを確かめる）
@@ -236,11 +236,14 @@ struct WriteView: View {
             let demo = Array("帰りに見た夕焼けがきれいだった。")
             for (i, ch) in demo.enumerated() {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6 + Double(i) * 0.35) {
-                    if !finished { text.append(ch); handleGrow(1) }
+                    if !finished { text.append(ch); typed() }
                 }
             }
         }
     }
+
+    /// この回に書いていた時間（開いてから今まで）
+    private var baseSecondsUsed: Double { Date().timeIntervalSince(start) }
 
     private func finish() {
         withAnimation(.spring(duration: 0.35)) { finished = true }
@@ -254,7 +257,7 @@ struct WriteView: View {
     private func save() {
         let body = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if let original, body == original.trimmingCharacters(in: .whitespacesAndNewlines) { return }
-        let used = min(Date(), deadline).timeIntervalSince(start)
+        let used = baseSecondsUsed
         if let existing {
             if body.isEmpty {
                 context.delete(existing)
@@ -275,24 +278,6 @@ struct WriteView: View {
         }
         try? context.save()
         Task { await Reminder.shared.reschedule() }
-    }
-}
-
-/// 文字を書いたときに出る「+1」
-private struct BonusPop: View {
-    let trigger: Int
-    @State private var shown = false
-    var body: some View {
-        Text("+1")
-            .font(.system(size: 20, weight: .bold, design: .rounded))
-            .foregroundColor(.dlPrimary)
-            .opacity(shown ? 1 : 0)
-            .offset(y: shown ? -10 : 6)
-            .onChange(of: trigger) { _, _ in
-                shown = false
-                withAnimation(.easeOut(duration: 0.12)) { shown = true }
-                withAnimation(.easeIn(duration: 0.35).delay(0.35)) { shown = false }
-            }
     }
 }
 

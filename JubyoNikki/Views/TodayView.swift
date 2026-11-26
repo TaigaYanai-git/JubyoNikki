@@ -253,7 +253,7 @@ struct TodayView: View {
                 Text("10秒だけ、今日のことを。")
                     .font(.title3.weight(.bold))
                     .foregroundColor(.dlText)
-                Text("1文字書くごとに、1秒のびます。")
+                Text("書いている間は、時計が止まります。")
                     .font(.subheadline)
                     .foregroundColor(.dlTextSub)
             }
