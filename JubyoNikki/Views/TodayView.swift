@@ -235,11 +235,8 @@ struct TodayView: View {
 
     private var startCard: some View {
         VStack(spacing: 18) {
-            ZStack {
-                Circle().stroke(Color.dlCardTint, lineWidth: 12)
-                Circle()
-                    .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
-                            style: StrokeStyle(lineWidth: 12, lineCap: .round))
+            // アイコンと同じ：60 秒の文字盤の 10 秒ぶん（1/6）だけ琥珀
+            StopwatchRing(progress: 10.0 / 60.0) {
                 VStack(spacing: 0) {
                     Text("10")
                         .font(.system(size: 58, weight: .bold, design: .rounded))
@@ -247,8 +244,7 @@ struct TodayView: View {
                     Text("秒").font(.caption.weight(.semibold)).foregroundColor(.dlTextSub)
                 }
             }
-            .frame(width: 150, height: 150)
-            .padding(.top, 8)
+            .padding(.top, 4)
             VStack(spacing: 6) {
                 Text("10秒だけ、今日のことを。")
                     .font(.title3.weight(.bold))

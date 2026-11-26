@@ -138,14 +138,7 @@ struct WriteView: View {
     private var timerRing: some View {
         let progress = finished ? 0 : remaining / max(Self.baseSeconds, deadline.timeIntervalSince(start))
         let urgent = remaining < 3 && !finished
-        return ZStack {
-            Circle().stroke(Color.dlCardTint, lineWidth: 12)
-            Circle()
-                .trim(from: 0, to: progress)
-                .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-                .animation(.spring(duration: 0.3), value: credited)
+        return StopwatchRing(progress: progress) {
             VStack(spacing: 0) {
                 Text(finished ? "0" : "\(Int(ceil(remaining)))")
                     .font(.system(size: 58, weight: .bold, design: .rounded))
@@ -157,10 +150,12 @@ struct WriteView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundColor(.dlTextSub)
             }
-            BonusPop(trigger: bonusTick)
-                .offset(x: 62, y: -52)
         }
-        .frame(width: 150, height: 150)
+        .animation(.spring(duration: 0.3), value: credited)
+        .overlay {
+            BonusPop(trigger: bonusTick)
+                .offset(x: 62, y: -40)
+        }
         .padding(.top, 4)
     }
 
@@ -303,7 +298,8 @@ private struct BonusPop: View {
     var body: some View {
         Text("+1")
             .font(.system(size: 20, weight: .bold, design: .rounded))
-            .foregroundColor(.dlPrimary)
+            .foregroundColor(.dlAmber)
+            .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
             .opacity(shown ? 1 : 0)
             .offset(y: shown ? -10 : 6)
             .onChange(of: trigger) { _, _ in
