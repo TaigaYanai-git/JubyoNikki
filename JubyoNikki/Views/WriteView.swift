@@ -23,14 +23,18 @@ struct WriteView: View {
     @State private var start = Date()
     @State private var deadline = Date().addingTimeInterval(WriteView.baseSeconds)
     @State private var now = Date()
-    @State private var maxCount = 0
+    /// この回でのびた秒数（＝数えた文字数）
+    @State private var credited = 0
+    /// 確定した文字数の、これまでの最大（消して書き直しても秒が増えないようにする）
+    @State private var committedHigh = 0
+    /// 変換中の文字で、すでにのばした秒数（変換して文字数が減っても返さない）
+    @State private var composingCredit = 0
+    @State private var composing = false
     @State private var finished = false
     @State private var bonusTick = 0
     /// 開いた時点の今日の文（10秒追加のとき。入力欄に入れて、前の文も直せる）
     @State private var original: String?
-    /// 開いた時点の文字数（空白を除く）。これより増えた分だけ秒がのびる
-    @State private var baseCount = 0
-    @FocusState private var focused: Bool
+    @State private var focused = false
 
     private let ticker = Timer.publish(every: 1.0 / 30, on: .main, in: .common).autoconnect()
     private let haptic = UIImpactFeedbackGenerator(style: .soft)
@@ -38,8 +42,11 @@ struct WriteView: View {
     private var todayKey: String { dayKey }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
     private var remaining: Double { max(0, deadline.timeIntervalSince(now)) }
-    private var gained: Int { maxCount - baseCount }
-    private var charCount: Int { text.filter { !$0.isWhitespace && !$0.isNewline }.count }
+    private var gained: Int { credited }
+    private var charCount: Int { Self.count(text) }
+
+    /// 数える文字（空白と改行は数えない）
+    static func count(_ s: String) -> Int { s.filter { !$0.isWhitespace && !$0.isNewline }.count }
 
     var body: some View {
         ZStack {
@@ -59,16 +66,41 @@ struct WriteView: View {
             now = t
             if remaining <= 0 { finish() }
         }
-        .onChange(of: text) { _, newValue in
-            guard !finished else { return }
-            let n = newValue.filter { !$0.isWhitespace && !$0.isNewline }.count
-            if n > maxCount {
-                deadline += Double(n - maxCount)
-                maxCount = n
-                bonusTick += 1
-                haptic.impactOccurred(intensity: 0.6)
+    }
+
+    /// 文字が変わるたびに呼ぶ。1 文字ふえるごとに 1 秒のばす。
+    /// - 変換中のかなは、ふえた分だけその場でのばす（変換を待たずに秒が増える）
+    /// - 変換・予測変換で確定したとき、確定した文字の方が多ければ差の分を足す。少なくなっても返さない
+    /// - 確定した文字は「これまでの最大」を超えた分だけ数える（消して書き直しても増えない）
+    private func handleEdit(committed: String, marked: String) {
+        guard !finished else { return }
+        let c = Self.count(committed)
+        let m = Self.count(marked)
+        if m > 0 {
+            composing = true
+            let provisional = max(0, c + m - committedHigh)
+            if provisional > composingCredit {
+                grant(provisional - composingCredit)
+                composingCredit = provisional
             }
+        } else if composing {
+            let growth = max(0, c - committedHigh)
+            if growth > composingCredit { grant(growth - composingCredit) }
+            committedHigh = max(committedHigh, c)
+            composingCredit = 0
+            composing = false
+        } else if c > committedHigh {
+            grant(c - committedHigh)
+            committedHigh = c
         }
+    }
+
+    private func grant(_ n: Int) {
+        guard n > 0 else { return }
+        deadline += Double(n)
+        credited += n
+        bonusTick += 1
+        haptic.impactOccurred(intensity: 0.6)
     }
 
     // MARK: 部品
@@ -113,7 +145,7 @@ struct WriteView: View {
                 .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
                         style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.spring(duration: 0.3), value: maxCount)
+                .animation(.spring(duration: 0.3), value: credited)
             VStack(spacing: 0) {
                 Text(finished ? "0" : "\(Int(ceil(remaining)))")
                     .font(.system(size: 58, weight: .bold, design: .rounded))
@@ -141,12 +173,9 @@ struct WriteView: View {
                         .padding(.top, 8)
                         .padding(.leading, 5)
                 }
-                TextEditor(text: $text)
-                    .focused($focused)
-                    .disabled(finished)
-                    .scrollContentBackground(.hidden)
-                    .foregroundColor(.dlText)
-                    .font(.body)
+                DiaryTextView(text: $text, isEditable: !finished, focus: focused) { committed, marked in
+                    handleEdit(committed: committed, marked: marked)
+                }
             }
             .padding(10)
             .frame(minHeight: 120, maxHeight: finished ? 220 : .infinity)
@@ -210,8 +239,10 @@ struct WriteView: View {
     private func begin() {
         original = existing?.text
         text = original ?? ""
-        baseCount = charCount
-        maxCount = baseCount
+        committedHigh = charCount
+        credited = 0
+        composingCredit = 0
+        composing = false
         finished = false
         start = Date()
         now = start
@@ -222,7 +253,9 @@ struct WriteView: View {
         if ProcessInfo.processInfo.arguments.contains("-typeDemo") {
             let demo = Array("帰りに見た夕焼けがきれいだった。")
             for (i, ch) in demo.enumerated() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6 + Double(i) * 0.35) { if !finished { text.append(ch) } }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6 + Double(i) * 0.35) {
+                    if !finished { text.append(ch); handleEdit(committed: text, marked: "") }
+                }
             }
         }
     }

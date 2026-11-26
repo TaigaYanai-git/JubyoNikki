@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3093DA6A88EDF7D3DF833EF2 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D82F60A8120D4872F44F11 /* CalendarView.swift */; };
 		3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */; };
+		40A0B47D8FE08F5FFB2BAC68 /* DiaryTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090291EC7CDF886FED0040C /* DiaryTextView.swift */; };
 		486DF1410B82938010344CB1 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 723227255C95839267399F10 /* GoogleMobileAds */; };
 		590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */; };
 		5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4C2B9E5B04A6888BDA632724 /* AppIcon.icon */; };
@@ -25,6 +26,7 @@
 		0995464BBCC4D59E5D6A29CF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JubyoNikkiApp.swift; sourceTree = "<group>"; };
 		4C2B9E5B04A6888BDA632724 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		6090291EC7CDF886FED0040C /* DiaryTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryTextView.swift; sourceTree = "<group>"; };
 		790BB9CB2BB91B8417E9BA97 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardedAds.swift; sourceTree = "<group>"; };
 		821E372AF4D1359A6B242F31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				A0D82F60A8120D4872F44F11 /* CalendarView.swift */,
+				6090291EC7CDF886FED0040C /* DiaryTextView.swift */,
 				0995464BBCC4D59E5D6A29CF /* SettingsView.swift */,
 				821E372AF4D1359A6B242F31 /* Theme.swift */,
 				8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */,
@@ -204,6 +207,7 @@
 			files = (
 				3093DA6A88EDF7D3DF833EF2 /* CalendarView.swift in Sources */,
 				590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */,
+				40A0B47D8FE08F5FFB2BAC68 /* DiaryTextView.swift in Sources */,
 				3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */,
 				E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */,
 				D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */,
