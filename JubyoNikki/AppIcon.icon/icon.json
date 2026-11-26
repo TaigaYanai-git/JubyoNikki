@@ -2,13 +2,13 @@
   "fill-specializations": [
     {
       "value": {
-        "automatic-gradient": "srgb:0.20000,0.17000,0.27000,1.00000"
+        "automatic-gradient": "srgb:0.96000,0.94000,0.90000,1.00000"
       }
     },
     {
       "appearance": "dark",
       "value": {
-        "automatic-gradient": "srgb:0.20000,0.17000,0.27000,1.00000"
+        "automatic-gradient": "srgb:0.16000,0.14000,0.20000,1.00000"
       }
     }
   ],
@@ -39,6 +39,31 @@
               }
             }
           ]
+        },
+        {
+          "glass": true,
+          "image-name": "band.svg",
+          "name": "band",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          },
+          "fill-specializations": [
+            {
+              "value": {
+                "solid": "srgb:0.88000,0.27000,0.25000,1.00000"
+              }
+            },
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "srgb:0.88000,0.27000,0.25000,1.00000"
+              }
+            }
+          ]
         }
       ],
       "shadow": {
@@ -53,9 +78,9 @@
     {
       "layers": [
         {
-          "glass": true,
-          "image-name": "progress.svg",
-          "name": "progress",
+          "glass": false,
+          "image-name": "spine.svg",
+          "name": "spine",
           "position": {
             "scale": 1,
             "translation-in-points": [
@@ -66,21 +91,21 @@
           "fill-specializations": [
             {
               "value": {
-                "solid": "srgb:1.00000,0.33000,0.30000,1.00000"
+                "solid": "srgb:0.11000,0.12000,0.22000,1.00000"
               }
             },
             {
               "appearance": "dark",
               "value": {
-                "solid": "srgb:1.00000,0.33000,0.30000,1.00000"
+                "solid": "srgb:0.11000,0.12000,0.22000,1.00000"
               }
             }
           ]
         },
         {
           "glass": true,
-          "image-name": "crown.svg",
-          "name": "crown",
+          "image-name": "cover.svg",
+          "name": "cover",
           "position": {
             "scale": 1,
             "translation-in-points": [
@@ -91,21 +116,21 @@
           "fill-specializations": [
             {
               "value": {
-                "solid": "srgb:1.00000,1.00000,1.00000,1.00000"
+                "solid": "srgb:0.16000,0.17000,0.30000,1.00000"
               }
             },
             {
               "appearance": "dark",
               "value": {
-                "solid": "srgb:1.00000,1.00000,1.00000,1.00000"
+                "solid": "srgb:0.16000,0.17000,0.30000,1.00000"
               }
             }
           ]
         },
         {
           "glass": false,
-          "image-name": "ring.svg",
-          "name": "ring",
+          "image-name": "pages.svg",
+          "name": "pages",
           "position": {
             "scale": 1,
             "translation-in-points": [
@@ -116,13 +141,13 @@
           "fill-specializations": [
             {
               "value": {
-                "solid": "srgb:0.33000,0.30000,0.40000,1.00000"
+                "solid": "srgb:0.99000,0.97000,0.92000,1.00000"
               }
             },
             {
               "appearance": "dark",
               "value": {
-                "solid": "srgb:0.33000,0.30000,0.40000,1.00000"
+                "solid": "srgb:0.99000,0.97000,0.92000,1.00000"
               }
             }
           ]
@@ -130,7 +155,7 @@
       ],
       "shadow": {
         "kind": "neutral",
-        "opacity": 0.3
+        "opacity": 0.45
       },
       "translucency": {
         "enabled": false,

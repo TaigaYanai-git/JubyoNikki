@@ -11,11 +11,14 @@
 		3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */; };
 		486DF1410B82938010344CB1 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 723227255C95839267399F10 /* GoogleMobileAds */; };
 		590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */; };
+		5BA2CF8E480A98D6292F00D0 /* KleeOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6B80B671B1F19F651C92E29 /* KleeOne-Regular.ttf */; };
 		5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4C2B9E5B04A6888BDA632724 /* AppIcon.icon */; };
 		7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */; };
+		97607695F9E3D52C6141D672 /* KleeOne-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75F6B8A1437EDF8A4C5EB63F /* KleeOne-SemiBold.ttf */; };
 		BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0995464BBCC4D59E5D6A29CF /* SettingsView.swift */; };
 		D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */; };
 		D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821E372AF4D1359A6B242F31 /* Theme.swift */; };
+		D79A6DE5280D78125603C6E4 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = C4CD48C95216800B337F29CB /* OFL.txt */; };
 		DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D764E4B38C2A0665FA050FE8 /* WriteView.swift */; };
 		E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E8ADA7363799F1B19AABC5 /* Reminder.swift */; };
 /* End PBXBuildFile section */
@@ -24,6 +27,7 @@
 		0995464BBCC4D59E5D6A29CF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JubyoNikkiApp.swift; sourceTree = "<group>"; };
 		4C2B9E5B04A6888BDA632724 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		75F6B8A1437EDF8A4C5EB63F /* KleeOne-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "KleeOne-SemiBold.ttf"; sourceTree = "<group>"; };
 		790BB9CB2BB91B8417E9BA97 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardedAds.swift; sourceTree = "<group>"; };
 		821E372AF4D1359A6B242F31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -31,7 +35,9 @@
 		A0D82F60A8120D4872F44F11 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JubyoNikki.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
+		C4CD48C95216800B337F29CB /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Ads.xcconfig; sourceTree = "<group>"; };
+		D6B80B671B1F19F651C92E29 /* KleeOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "KleeOne-Regular.ttf"; sourceTree = "<group>"; };
 		D764E4B38C2A0665FA050FE8 /* WriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteView.swift; sourceTree = "<group>"; };
 		E7E8ADA7363799F1B19AABC5 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -93,6 +99,24 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		764CC6704FFB6E428DA43068 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				931DC6E9A445A4C57A24C69F /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		931DC6E9A445A4C57A24C69F /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D6B80B671B1F19F651C92E29 /* KleeOne-Regular.ttf */,
+				75F6B8A1437EDF8A4C5EB63F /* KleeOne-SemiBold.ttf */,
+				C4CD48C95216800B337F29CB /* OFL.txt */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		9BB4084FB25603925DD0E4AC = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +133,7 @@
 				790BB9CB2BB91B8417E9BA97 /* Info.plist */,
 				381885B88EE5133157FE5DDB /* App */,
 				4115F4402F1E20859106CDFD /* Models */,
+				764CC6704FFB6E428DA43068 /* Resources */,
 				239FDE6F97AE07106CB86293 /* Services */,
 				0C85C23DAAFF14094C4B0D84 /* Views */,
 			);
@@ -189,6 +214,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */,
+				5BA2CF8E480A98D6292F00D0 /* KleeOne-Regular.ttf in Resources */,
+				97607695F9E3D52C6141D672 /* KleeOne-SemiBold.ttf in Resources */,
+				D79A6DE5280D78125603C6E4 /* OFL.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

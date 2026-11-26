@@ -231,6 +231,11 @@
 			<string>3qcr597p9d.skadnetwork</string>
 		</dict>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>KleeOne-Regular.ttf</string>
+		<string>KleeOne-SemiBold.ttf</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

@@ -18,7 +18,7 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     Text(Day.label(Date()))
-                        .font(.title3.weight(.semibold))
+                        .font(.diary(24, bold: true))
                         .foregroundColor(.dlText)
                         .padding(.top, 4)
                     if let today { writtenCard(today) } else { startCard }
@@ -176,13 +176,8 @@ struct TodayView: View {
                     .background(Color.dlPrimaryBg)
                     .clipShape(Capsule())
             }
-            Text(e.text)
-                .font(.body)
-                .foregroundColor(.dlText)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
-                .background(Color.dlCardTint)
-                .cornerRadius(14)
+            RuledText(text: e.text, minLines: 2)
+                .padding(.horizontal, 4)
             Button {
                 showWrite = true
             } label: {
@@ -237,14 +232,11 @@ struct EntryRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(Day.label(entry.date)).font(.caption.weight(.semibold)).foregroundColor(.dlTextSub)
+                Text(Day.label(entry.date)).font(.diary(14, bold: true)).foregroundColor(.dlTextSub)
                 Spacer()
                 Text("\(Int(entry.seconds.rounded()))秒").font(.caption).foregroundColor(.dlTextLight)
             }
-            Text(entry.text)
-                .font(.body)
-                .foregroundColor(.dlText)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            RuledText(text: entry.text)
         }
         .dlCard()
     }

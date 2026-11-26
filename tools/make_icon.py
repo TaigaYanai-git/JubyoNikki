@@ -3,17 +3,14 @@
   python3 tools/make_icon.py          # .icon を作る
   python3 tools/make_icon.py --guide  # 黄金比の補助線を描いた SVG も書き出す（docs/icon-guide.svg）
 
-絵柄：ストップウォッチの文字盤に「10」。外枠の 1/6（＝60 秒盤の 10 秒）だけ濃く塗る。
-寸法はすべて黄金比 φ から決める（φ = 1.618…）。
-  - 外枠の直径      = アイコンの幅 ÷ φ
-  - 外枠の太さ      = 外枠の半径 ÷ φ³
-  - 「10」の高さ    = 外枠の内径 ÷ φ
-  - 「0」の幅       = 「10」の高さ ÷ φ（φ の長方形）
-  - 数字の線の太さ  = 「10」の高さ ÷ φ³
-  - 「1」と「0」の間 = 線の太さ ÷ φ
-  - 竜頭の幅        = 外枠の半径 ÷ φ²、高さ = 外枠の太さ
+絵柄：紺の表紙の日記帳に、白く「10」と書いてある。左に背表紙、右に赤いゴムバンド、右下に紙の厚み。
+寸法はすべて黄金比 φ（1.618…）から決める。
+  - 日記帳の縦       = アイコンの幅 ÷ √φ、横 = 縦 ÷ φ（黄金長方形）
+  - 背表紙の幅       = 横 ÷ φ⁴、ゴムバンドと紙の厚み = 横 ÷ φ⁶、角の丸み = 横 ÷ φ⁵
+  - 「10」の幅       = 背表紙とバンドの間の面の幅 ÷ √φ、「0」の幅 = 高さ ÷ φ、線の太さ = 高さ ÷ φ³、すき間 = 線 ÷ φ
+  - 「10」の中心     = 表紙を上下 1 : φ に分ける線の上
 文字はフォントではなく図形で描く（Icon Composer は SVG の文字を描かないため）。
-Icon Composer は stroke を面として扱うので、輪や数字はすべて塗りの図形（evenodd）で描く。
+Icon Composer は stroke を面として扱うので、すべて塗りの図形（evenodd）で描く。
 """
 import json
 import math
@@ -27,25 +24,30 @@ ICON = ROOT / "JubyoNikki" / "AppIcon.icon"
 PHI = (1 + 5 ** 0.5) / 2
 S = 1024
 
-R_OUT = S / PHI / 2                 # 316.4
-W_RING = R_OUT / PHI ** 3           # 74.7（はっきり見えるよう太め）
-R_IN = R_OUT - W_RING
-CROWN_W = R_OUT / PHI ** 2          # 120.9
-CROWN_H = W_RING
-STEM_W = CROWN_W / PHI ** 2
-STEM_H = W_RING / PHI
-# 竜頭まで含めた全体の高さの中心をアイコンの中心にそろえる
-TOTAL_H = CROWN_H + STEM_H + 2 * R_OUT
-CX = S / 2
-CY = S / 2 + (TOTAL_H / 2 - R_OUT)
+# 日記帳（表紙）：縦 : 横 = φ : 1（黄金長方形）
+BOOK_H = S / PHI ** 0.5             # 805
+BOOK_W = BOOK_H / PHI               # 497
+BOOK_R = BOOK_W / PHI ** 5          # 角の丸み 45
+SPINE = BOOK_W / PHI ** 4           # 背表紙の幅 73
+BAND = BOOK_W / PHI ** 6            # ゴムバンドの幅 28
+PAGE = BOOK_W / PHI ** 6            # 紙の厚み（右と下にのぞく） 28
+# 紙の厚みまで含めて中央に置く
+BX = (S - BOOK_W - PAGE) / 2
+BY = (S - BOOK_H - PAGE) / 2
+BAND_X = BX + BOOK_W - SPINE / PHI  # バンドは右端から 背表紙の幅 ÷ φ だけ内側
 
-H = 2 * R_IN / PHI                  # 「10」の高さ
+# 表紙の「10」：高さ = 表紙の幅 ÷ φ、中心は表紙を上下 1 : φ に分ける線の上（ノートの題を書く位置）
+FACE_W = BOOK_W - SPINE - SPINE / PHI - BAND   # 背表紙とバンドの間の面の幅
+# 「10」全体の幅（旗 + 線 + すき間 + 0 の幅 = 高さ × (1/φ³ + 1/φ³ + 1/φ⁴ + 1/φ)）を 面の幅 ÷ √φ にする
+H = FACE_W / PHI ** 0.5 / (2 / PHI ** 3 + 1 / PHI ** 4 + 1 / PHI)
 W0 = H / PHI                        # 「0」の幅
 T = H / PHI ** 3                    # 線の太さ
 GAP = T / PHI
-FLAG = W0 / PHI ** 2                # 「1」の旗の横の長さ
-ARC = 60                            # 10 秒（60 秒盤の 1/6）
-
+FLAG = W0 / PHI ** 2
+FACE_X0 = BX + SPINE                # 背表紙とバンドの間の面
+FACE_X1 = BAND_X  # ここまでが表紙の面
+CX = (FACE_X0 + FACE_X1) / 2
+CY = BY + BOOK_H / PHI ** 2
 
 def svg(body):
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="{S}" height="{S}" viewBox="0 0 {S} {S}">\n{body}\n</svg>\n'
@@ -83,14 +85,13 @@ def arc_band(r_in, r_out, a0, a1):
             f"A{f(rw)},{f(rw)} 0 0 1 {f(o0[0])},{f(o0[1])} Z")
 
 
-# 「10」の配置：「1」は旗の先から軸の右端まで、「0」は幅 W0。全体を中央に置く
+# 「10」の配置：「1」は旗の先から軸の右端まで、「0」は幅 W0。表紙の面の中央に置く
 one_w = FLAG + T
 total_w = one_w + GAP + W0
-x1 = CX - total_w / 2 + FLAG        # 「1」の軸の左端
-x0 = x1 + T + GAP                   # 「0」の左端
+x1 = CX - total_w / 2 + FLAG
+x0 = x1 + T + GAP
 top = CY - H / 2
 
-# 「1」：軸と、左下へ伸びる旗（軸の上端から 角度 atan(1/φ) で下がる、端の丸い棒）
 flag_len = FLAG * PHI
 flag_ang = 180 - math.degrees(math.atan2(1, PHI))  # 左下向き（傾き 1:φ）
 one = (f'<path fill="#000" d="{stadium(x1, top, T, H)}"/>'
@@ -99,13 +100,19 @@ one = (f'<path fill="#000" d="{stadium(x1, top, T, H)}"/>'
 zero = (f'<path fill="#000" fill-rule="evenodd" d="{stadium(x0, top, W0, H)} '
         f'{stadium(x0 + T, top + T, W0 - 2 * T, H - 2 * T)}"/>')
 
+
+def rrect(x, y, w, h, r):
+    return f'<rect x="{f(x)}" y="{f(y)}" width="{f(w)}" height="{f(h)}" rx="{f(r)}" fill="#000"/>'
+
+
 layers = {
     "digits": svg(one + zero),
-    "progress": svg(f'<path fill="#000" d="{arc_band(R_IN, R_OUT, -90, -90 + ARC)}"/>'),
-    "ring": svg(f'<path fill="#000" fill-rule="evenodd" d="{circle_path(CX, CY, R_OUT)} {circle_path(CX, CY, R_IN)}"/>'),
-    "crown": svg(
-        f'<rect x="{f(CX - CROWN_W / 2)}" y="{f(CY - R_OUT - STEM_H - CROWN_H)}" width="{f(CROWN_W)}" height="{f(CROWN_H)}" rx="{f(CROWN_H / 2)}" fill="#000"/>'
-        f'<rect x="{f(CX - STEM_W / 2)}" y="{f(CY - R_OUT - STEM_H - 2)}" width="{f(STEM_W)}" height="{f(STEM_H + W_RING / 2)}" fill="#000"/>'),
+    "band": svg(f'<rect x="{f(BAND_X)}" y="{f(BY - 6)}" width="{f(BAND)}" height="{f(BOOK_H + 12)}" rx="{f(BAND / 3)}" fill="#000"/>'),
+    "spine": svg(f'<path fill="#000" d="M{f(BX + BOOK_R)},{f(BY)} L{f(BX + SPINE)},{f(BY)} L{f(BX + SPINE)},{f(BY + BOOK_H)} '
+                 f'L{f(BX + BOOK_R)},{f(BY + BOOK_H)} A{f(BOOK_R)},{f(BOOK_R)} 0 0 1 {f(BX)},{f(BY + BOOK_H - BOOK_R)} '
+                 f'L{f(BX)},{f(BY + BOOK_R)} A{f(BOOK_R)},{f(BOOK_R)} 0 0 1 {f(BX + BOOK_R)},{f(BY)} Z"/>'),
+    "cover": svg(rrect(BX, BY, BOOK_W, BOOK_H, BOOK_R)),
+    "pages": svg(rrect(BX + PAGE, BY + PAGE, BOOK_W, BOOK_H, BOOK_R)),
 }
 for old in (ICON / "Assets").glob("*.svg"):
     old.unlink()
@@ -121,31 +128,34 @@ def solid(light, dark):
     return [{"value": {"solid": srgb(light)}}, {"appearance": "dark", "value": {"solid": srgb(dark)}}]
 
 
-# 暗い地に白い「10」、10 秒の弧だけ赤（ストップウォッチの針の色）。ライトもダークも同じ配色
-BG_TOP = (0.20, 0.17, 0.27)
+# 背景は明るい紙色、日記帳は濃い紺の表紙に白い「10」、赤いゴムバンド
+BG = (0.96, 0.94, 0.90)
+BG_DARK = (0.16, 0.14, 0.20)
+NAVY = (0.16, 0.17, 0.30)
+SPINE_C = (0.11, 0.12, 0.22)
 WHITE = (1.0, 1.0, 1.0)
-RED = (1.0, 0.33, 0.30)
-TRACK = (0.33, 0.30, 0.40)     # 外枠の残り
+RED = (0.88, 0.27, 0.25)
+PAPER = (0.99, 0.97, 0.92)
 
 
-def layer(name, light, dark, glass=True):
+def layer(name, light, dark=None, glass=True):
     return {"glass": glass, "image-name": f"{name}.svg", "name": name,
             "position": {"scale": 1, "translation-in-points": [0, 0]},
-            "fill-specializations": solid(light, dark)}
+            "fill-specializations": solid(light, dark or light)}
 
 
 doc = {
     "fill-specializations": [
-        {"value": {"automatic-gradient": srgb(BG_TOP)}},
-        {"appearance": "dark", "value": {"automatic-gradient": srgb(BG_TOP)}},
+        {"value": {"automatic-gradient": srgb(BG)}},
+        {"appearance": "dark", "value": {"automatic-gradient": srgb(BG_DARK)}},
     ],
     "groups": [
-        {"layers": [layer("digits", WHITE, WHITE)],
+        {"layers": [layer("digits", WHITE), layer("band", RED)],
          "shadow": {"kind": "neutral", "opacity": 0.35},
          "translucency": {"enabled": False, "value": 0}},
-        {"layers": [layer("progress", RED, RED), layer("crown", WHITE, WHITE),
-                    layer("ring", TRACK, TRACK, glass=False)],
-         "shadow": {"kind": "neutral", "opacity": 0.3},
+        {"layers": [layer("spine", SPINE_C, glass=False), layer("cover", NAVY),
+                    layer("pages", PAPER, glass=False)],
+         "shadow": {"kind": "neutral", "opacity": 0.45},
          "translucency": {"enabled": False, "value": 0}},
     ],
     "supported-platforms": {"circles": ["watchOS"], "squares": "shared"},
@@ -154,11 +164,11 @@ doc = {
 
 if "--guide" in sys.argv:
     g = '<g fill="none" stroke="#e0567a" stroke-width="2" stroke-dasharray="8 6">'
-    g += f'<circle cx="{f(CX)}" cy="{f(CY)}" r="{f(R_OUT)}"/><circle cx="{f(CX)}" cy="{f(CY)}" r="{f(R_IN)}"/>'
+    g += f'<rect x="{f(BX)}" y="{f(BY)}" width="{f(BOOK_W)}" height="{f(BOOK_H)}"/>'
+    g += f'<line x1="{f(BX)}" y1="{f(CY)}" x2="{f(BX + BOOK_W)}" y2="{f(CY)}"/>'
     g += f'<rect x="{f(x0)}" y="{f(top)}" width="{f(W0)}" height="{f(H)}"/>'
-    g += f'<rect x="{f(x1 - FLAG)}" y="{f(top)}" width="{f(total_w)}" height="{f(H)}"/>'
     g += '</g>'
-    body = "".join(layers[k].split("\n")[1] for k in ("ring", "progress", "crown", "digits"))
+    body = "".join(layers[k].split("\n")[1] for k in ("pages", "cover", "spine", "band", "digits"))
     (ROOT / "docs" / "icon-guide.svg").write_text(svg(f'<rect width="{S}" height="{S}" fill="#fff"/><g opacity="0.25">{body}</g>{g}'))
 
-print(f"φ={PHI:.4f} 外枠直径={2 * R_OUT:.1f} 太さ={W_RING:.1f} 数字の高さ={H:.1f} 0の幅={W0:.1f} 線={T:.1f}")
+print(f"φ={PHI:.4f} 日記帳={BOOK_W:.0f}×{BOOK_H:.0f} 背表紙={SPINE:.0f} 数字の高さ={H:.0f} 0の幅={W0:.0f} 線={T:.0f}")

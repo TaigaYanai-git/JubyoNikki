@@ -36,10 +36,8 @@ struct CalendarView: View {
             .sheet(item: $selected) { e in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
-                        Text(Day.label(e.date)).font(.headline).foregroundColor(.dlText)
-                        Text(e.text).font(.body).foregroundColor(.dlText)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(16).background(Color.dlCardTint).cornerRadius(14)
+                        Text(Day.label(e.date)).font(.diary(20, bold: true)).foregroundColor(.dlText)
+                        RuledText(text: e.text, minLines: 3)
                         Text("\(Int(e.seconds.rounded()))秒で書きました").font(.caption).foregroundColor(.dlTextSub)
                     }
                     .padding(24)
@@ -55,7 +53,7 @@ struct CalendarView: View {
             circleButton("chevron.left") { shift(-1) }
             Spacer()
             Text(month.formatted(.dateTime.year().month(.wide).locale(Locale(identifier: "ja_JP"))))
-                .font(.title3.weight(.semibold)).foregroundColor(.dlText)
+                .font(.diary(22, bold: true)).foregroundColor(.dlText)
             Spacer()
             circleButton("chevron.right") { shift(1) }
                 .opacity(isCurrentMonth ? 0.3 : 1)

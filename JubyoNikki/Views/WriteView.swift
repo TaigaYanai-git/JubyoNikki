@@ -86,7 +86,7 @@ struct WriteView: View {
             Spacer()
             VStack(spacing: 2) {
                 Text(Day.label(Day.date(from: dayKey) ?? Date()))
-                    .font(.headline)
+                    .font(.diary(19, bold: true))
                     .foregroundColor(.dlText)
                 if recovering {
                     Text("昨日の日記")
@@ -131,10 +131,13 @@ struct WriteView: View {
     private var editor: some View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack(alignment: .topLeading) {
+                // ノートの罫線（UITextView の上の余白 8pt から、1行ごとの下に線）
+                RuledLines(spacing: DiaryText.pitch, top: 8 + DiaryText.pitch - DiaryText.lineSpacing / 2)
                 if text.isEmpty {
                     Text("今日あったこと、ひとことで。")
+                        .font(.diary(DiaryText.size))
                         .foregroundColor(.dlTextLight)
-                        .padding(.top, 8)
+                        .padding(.top, 8 + DiaryText.lineSpacing / 2)
                         .padding(.leading, 5)
                 }
                 TextEditor(text: $text)
@@ -142,12 +145,10 @@ struct WriteView: View {
                     .disabled(finished)
                     .scrollContentBackground(.hidden)
                     .foregroundColor(.dlText)
-                    .font(.body)
+                    .font(.diary(DiaryText.size))
+                    .lineSpacing(DiaryText.lineSpacing)
             }
-            .padding(10)
             .frame(minHeight: 120, maxHeight: finished ? 220 : .infinity)
-            .background(Color.dlCardTint)
-            .cornerRadius(14)
             HStack {
                 Text("\(charCount)文字")
                 Spacer()

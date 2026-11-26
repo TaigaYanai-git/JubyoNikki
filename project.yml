@@ -52,6 +52,8 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         ITSAppUsesNonExemptEncryption: false
+        # 日記の文字（Klee One、SIL OFL）
+        UIAppFonts: [KleeOne-Regular.ttf, KleeOne-SemiBold.ttf]
         # 昨日を取り戻すときのリワード広告（AdMob）。ID は Config/Ads.xcconfig
         GADApplicationIdentifier: $(ADMOB_APP_ID)
         AdMobRewardedUnitID: $(ADMOB_REWARDED_UNIT_ID)
