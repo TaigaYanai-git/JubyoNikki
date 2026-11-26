@@ -58,12 +58,10 @@ struct RootView: View {
                 let d = FetchDescriptor<DiaryEntry>(predicate: #Predicate { $0.dayKey == key })
                 return ((try? context.fetchCount(d)) ?? 0) > 0
             }
-            if !ProcessInfo.processInfo.arguments.contains("-demo") {
-                await Reminder.shared.requestIfNeeded()
-            }
+            await Reminder.shared.refresh()
         }
         .onChange(of: phase) { _, p in
-            if p == .active { Task { await Reminder.shared.reschedule() } }
+            if p == .active { Task { await Reminder.shared.refresh() } }
         }
     }
 }

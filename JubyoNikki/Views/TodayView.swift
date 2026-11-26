@@ -20,6 +20,7 @@ struct TodayView: View {
                         .foregroundColor(.dlText)
                         .padding(.top, 4)
                     if let today { writtenCard(today) } else { startCard }
+                    if reminder.notAsked { askCard }
                     statsCard
                     if !entries.filter({ $0.dayKey != Day.key() }).isEmpty { recent }
                 }
@@ -60,8 +61,36 @@ struct TodayView: View {
                 Label("書きはじめる", systemImage: "pencil")
             }
             .buttonStyle(PrimaryButtonStyle())
+            if let next = reminder.nextFire(writtenToday: false) {
+                Label("\(Calendar.current.isDateInToday(next) ? "今日" : "明日") \(reminder.timeLabel) にお知らせします", systemImage: "bell")
+                    .font(.caption)
+                    .foregroundColor(.dlTextSub)
+            }
         }
         .dlCard(padding: 22)
+    }
+
+    /// 通知の許可は起動直後ではなく、ここで理由を見せてから聞く
+    private var askCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 12) {
+                Image(systemName: "bell.badge")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(.dlPrimary)
+                    .frame(width: 44, height: 44)
+                    .background(Color.dlPrimaryBg)
+                    .cornerRadius(12)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("毎日 \(reminder.timeLabel) にお知らせ").font(.headline).foregroundColor(.dlText)
+                    Text("書き忘れた日だけ届きます。時刻は設定で変えられます。")
+                        .font(.caption).foregroundColor(.dlTextSub)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Button("お知らせを受け取る") { Task { await reminder.requestPermission() } }
+                .buttonStyle(SecondaryButtonStyle())
+        }
+        .dlCard(padding: 18)
     }
 
     private func writtenCard(_ e: DiaryEntry) -> some View {
@@ -90,6 +119,13 @@ struct TodayView: View {
                 Label("10秒 書き足す", systemImage: "plus")
             }
             .buttonStyle(SecondaryButtonStyle())
+            if let next = reminder.nextFire(writtenToday: true) {
+                Label("次のお知らせは明日 \(reminder.timeLabel)", systemImage: "bell")
+                    .font(.caption)
+                    .foregroundColor(.dlTextSub)
+                    .frame(maxWidth: .infinity)
+                    .opacity(Calendar.current.isDateInToday(next) ? 0 : 1)
+            }
         }
         .dlCard(padding: 20)
     }

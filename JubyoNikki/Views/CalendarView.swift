@@ -113,7 +113,7 @@ struct CalendarView: View {
                     .foregroundColor(e != nil ? .white : (future ? .dlTextLight.opacity(0.6) : .dlTextLight))
                     .padding(6)
                 if let e {
-                    Text("\(Int(e.seconds.rounded()))s")
+                    Text("\(Int(e.seconds.rounded()))秒")
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .foregroundColor(.white.opacity(0.85))
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)

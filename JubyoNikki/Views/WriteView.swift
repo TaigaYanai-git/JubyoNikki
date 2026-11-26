@@ -86,7 +86,7 @@ struct WriteView: View {
     }
 
     private var timerRing: some View {
-        let progress = min(1, remaining / Self.baseSeconds)
+        let progress = finished ? 0 : remaining / max(Self.baseSeconds, deadline.timeIntervalSince(start))
         let urgent = remaining < 3 && !finished
         return ZStack {
             Circle().stroke(Color.dlCardTint, lineWidth: 12)
@@ -95,6 +95,7 @@ struct WriteView: View {
                 .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
                         style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .rotationEffect(.degrees(-90))
+                .animation(.spring(duration: 0.3), value: maxCount)
             VStack(spacing: 0) {
                 Text(finished ? "0" : "\(Int(ceil(remaining)))")
                     .font(.system(size: 58, weight: .bold, design: .rounded))
@@ -136,7 +137,7 @@ struct WriteView: View {
                     .font(.body)
             }
             .padding(10)
-            .frame(maxHeight: .infinity)
+            .frame(minHeight: 120, maxHeight: finished ? 220 : .infinity)
             .background(Color.dlCardTint)
             .cornerRadius(14)
             HStack {
@@ -160,9 +161,21 @@ struct WriteView: View {
 
     private var finishedButtons: some View {
         VStack(spacing: 10) {
-            Text(text.isEmpty ? "今日は書けませんでした。また明日。" : "書けました。\(Int((deadline.timeIntervalSince(start)).rounded()))秒の日記です。")
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.dlText)
+            if text.isEmpty {
+                Text("今日は書けませんでした。また明日。")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.dlText)
+            } else {
+                VStack(spacing: 4) {
+                    Text("\(Day.streak(keys: Set(entries.map(\.dayKey))))日連続")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundColor(.dlText)
+                    Text("\(Int(deadline.timeIntervalSince(start).rounded()))秒の日記を書きました")
+                        .font(.subheadline)
+                        .foregroundColor(.dlTextSub)
+                }
+                .padding(.bottom, 6)
+            }
             if text.isEmpty {
                 Button("もう一度 10 秒") { begin() }.buttonStyle(PrimaryButtonStyle())
             }
@@ -170,6 +183,7 @@ struct WriteView: View {
                 .buttonStyle(text.isEmpty ? AnyButtonStyle(SecondaryButtonStyle()) : AnyButtonStyle(PrimaryButtonStyle()))
         }
         .padding(.bottom, 8)
+        .frame(maxHeight: .infinity, alignment: .bottom)
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 

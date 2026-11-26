@@ -16,34 +16,9 @@
     {
       "layers": [
         {
-          "glass": false,
-          "image-name": "lead.svg",
-          "name": "lead",
-          "position": {
-            "scale": 1,
-            "translation-in-points": [
-              0,
-              0
-            ]
-          },
-          "fill-specializations": [
-            {
-              "value": {
-                "solid": "srgb:0.13000,0.12000,0.16000,1.00000"
-              }
-            },
-            {
-              "appearance": "dark",
-              "value": {
-                "solid": "srgb:0.13000,0.12000,0.16000,1.00000"
-              }
-            }
-          ]
-        },
-        {
           "glass": true,
-          "image-name": "tip.svg",
-          "name": "tip",
+          "image-name": "digits.svg",
+          "name": "digits",
           "position": {
             "scale": 1,
             "translation-in-points": [
@@ -54,38 +29,13 @@
           "fill-specializations": [
             {
               "value": {
-                "solid": "srgb:0.93000,0.80000,0.62000,1.00000"
+                "solid": "srgb:0.18000,0.14500,0.25000,1.00000"
               }
             },
             {
               "appearance": "dark",
               "value": {
-                "solid": "srgb:0.93000,0.80000,0.62000,1.00000"
-              }
-            }
-          ]
-        },
-        {
-          "glass": true,
-          "image-name": "pencil.svg",
-          "name": "pencil",
-          "position": {
-            "scale": 1,
-            "translation-in-points": [
-              0,
-              0
-            ]
-          },
-          "fill-specializations": [
-            {
-              "value": {
-                "solid": "srgb:0.13000,0.12000,0.16000,1.00000"
-              }
-            },
-            {
-              "appearance": "dark",
-              "value": {
-                "solid": "srgb:0.93000,0.91000,0.97000,1.00000"
+                "solid": "srgb:0.93000,0.90000,0.97000,1.00000"
               }
             }
           ]
@@ -104,6 +54,56 @@
       "layers": [
         {
           "glass": true,
+          "image-name": "progress.svg",
+          "name": "progress",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          },
+          "fill-specializations": [
+            {
+              "value": {
+                "solid": "srgb:0.18000,0.14500,0.25000,1.00000"
+              }
+            },
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "srgb:0.93000,0.90000,0.97000,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "glass": true,
+          "image-name": "crown.svg",
+          "name": "crown",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          },
+          "fill-specializations": [
+            {
+              "value": {
+                "solid": "srgb:0.18000,0.14500,0.25000,1.00000"
+              }
+            },
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "srgb:0.93000,0.90000,0.97000,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "glass": false,
           "image-name": "ring.svg",
           "name": "ring",
           "position": {
@@ -116,38 +116,13 @@
           "fill-specializations": [
             {
               "value": {
-                "solid": "srgb:0.13000,0.12000,0.16000,1.00000"
+                "solid": "srgb:0.86000,0.82000,0.95000,1.00000"
               }
             },
             {
               "appearance": "dark",
               "value": {
-                "solid": "srgb:0.93000,0.91000,0.97000,1.00000"
-              }
-            }
-          ]
-        },
-        {
-          "glass": false,
-          "image-name": "wedge.svg",
-          "name": "wedge",
-          "position": {
-            "scale": 1,
-            "translation-in-points": [
-              0,
-              0
-            ]
-          },
-          "fill-specializations": [
-            {
-              "value": {
-                "solid": "srgb:0.80000,0.74000,0.93000,1.00000"
-              }
-            },
-            {
-              "appearance": "dark",
-              "value": {
-                "solid": "srgb:0.80000,0.74000,0.93000,1.00000"
+                "solid": "srgb:0.30000,0.26000,0.40000,1.00000"
               }
             }
           ]

@@ -11,6 +11,8 @@ final class Reminder: ObservableObject {
     @Published var hour: Int { didSet { UserDefaults.standard.set(hour, forKey: "reminderHour") } }
     @Published var minute: Int { didSet { UserDefaults.standard.set(minute, forKey: "reminderMinute") } }
     @Published var denied = false
+    /// まだ許可を聞いていない（今日の画面にお知らせのカードを出す）
+    @Published var notAsked = false
 
     /// 最後に入れ直したときの「今日書いたか」
     private var writtenToday: () -> Bool = { false }
@@ -36,26 +38,42 @@ final class Reminder: ObservableObject {
 
     func setWrittenToday(_ f: @escaping () -> Bool) { writtenToday = f }
 
-    /// 初回は許可を聞く。断られていたら denied を立てる
-    func requestIfNeeded() async {
-        let center = UNUserNotificationCenter.current()
-        let settings = await center.notificationSettings()
-        switch settings.authorizationStatus {
-        case .notDetermined:
-            let ok = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
-            denied = !ok
-        case .denied:
-            denied = true
-        default:
-            denied = false
-        }
+    /// 許可の状態を読み直す（起動時・前面に戻ったとき）。ここでは許可を聞かない
+    func refresh() async {
+        let status = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+        notAsked = status == .notDetermined
+        denied = status == .denied
         await reschedule()
+    }
+
+    /// 今日の画面のカードから呼ぶ。断られたら denied を立てる
+    func requestPermission() async {
+        let ok = (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])) ?? false
+        notAsked = false
+        denied = !ok
+        if ok { isOn = true }
+        await reschedule()
+    }
+
+    /// 次にお知らせする日時（オフ・未許可なら nil）
+    func nextFire(writtenToday: Bool) -> Date? {
+        guard isOn, !denied, !notAsked else { return nil }
+        let cal = Calendar.current
+        let now = Date()
+        for offset in 0..<2 {
+            guard let day = cal.date(byAdding: .day, value: offset, to: now),
+                  let fire = cal.date(bySettingHour: hour, minute: minute, second: 0, of: day),
+                  fire > now else { continue }
+            if offset == 0 && writtenToday { continue }
+            return fire
+        }
+        return nil
     }
 
     func reschedule() async {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
-        guard isOn, !denied else { return }
+        guard isOn, !denied, !notAsked else { return }
         let cal = Calendar.current
         let now = Date()
         let lines = [
