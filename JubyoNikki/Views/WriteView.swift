@@ -33,6 +33,8 @@ struct WriteView: View {
     /// 書いていて時計が止まっていた時間の合計
     @State private var pausedTotal: Double = 0
     @State private var finished = false
+    /// 書き終わったときの、書いていた秒数（書き終わりの画面に出す）
+    @State private var usedSeconds: Double = 0
     /// 開いた時点の今日の文（10秒追加のとき。入力欄に入れて、前の文も直せる）
     @State private var original: String?
     @State private var focused = false
@@ -118,12 +120,12 @@ struct WriteView: View {
     private var timerRing: some View {
         let progress = finished ? 0 : remaining / Self.baseSeconds
         let urgent = remaining < 3 && !finished
-        // 止まっている間はカクカク揺らす（1/20 秒ごとに左右へ）
-        let jitter: Double = frozen ? (Int(now.timeIntervalSinceReferenceDate * 20) % 2 == 0 ? 2.5 : -2.5) : 0
+        // 止まっている間は、ゲージの先がその場で戻ったり進んだりする（1/10 秒ごと、2.5% ぶん）
+        let wobble: Double = frozen && Int(now.timeIntervalSinceReferenceDate * 10) % 2 == 0 ? -0.025 : 0
         return ZStack {
             Circle().stroke(Color.dlCardTint, lineWidth: 12)
             Circle()
-                .trim(from: 0, to: progress)
+                .trim(from: 0, to: max(0, min(1, progress + wobble)))
                 .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
                         style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .rotationEffect(.degrees(-90))
@@ -144,8 +146,6 @@ struct WriteView: View {
             }
         }
         .frame(width: 150, height: 150)
-        .rotationEffect(.degrees(jitter))
-        .offset(x: jitter * 0.6)
         .padding(.top, 4)
     }
 
@@ -190,13 +190,21 @@ struct WriteView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.dlText)
             } else {
-                VStack(spacing: 4) {
-                    Text("\(Day.streak(keys: Set(entries.map(\.dayKey))))日連続")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                VStack(spacing: 6) {
+                    Text(recovering ? "昨日の分も書けました" : "今日もお疲れさまでした")
+                        .font(.title2.weight(.bold))
                         .foregroundColor(.dlText)
-                    Text("\(Int((baseSecondsUsed).rounded()))秒の日記を書きました")
+                    Text(recovering ? "ゆっくり休んでくださいね。" : "また明日、10秒だけ。")
                         .font(.subheadline)
                         .foregroundColor(.dlTextSub)
+                    HStack(spacing: 8) {
+                        Label("\(Day.streak(keys: Set(entries.map(\.dayKey))))日連続", systemImage: "flame.fill")
+                        Text("・").foregroundColor(.dlTextLight)
+                        Label("\(Int(usedSeconds.rounded()))秒", systemImage: "timer")
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.dlPrimary)
+                    .padding(.top, 6)
                     if gotShiori {
                         Label("\(Shiori.streakPerShiori)日続いたので、しおりを1枚もらいました", systemImage: "bookmark.fill")
                             .font(.subheadline.weight(.semibold))
@@ -246,6 +254,7 @@ struct WriteView: View {
     private var baseSecondsUsed: Double { Date().timeIntervalSince(start) }
 
     private func finish() {
+        usedSeconds = baseSecondsUsed
         withAnimation(.spring(duration: 0.35)) { finished = true }
         focused = false
         save()
