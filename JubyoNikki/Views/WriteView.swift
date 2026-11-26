@@ -25,11 +25,8 @@ struct WriteView: View {
     @State private var now = Date()
     /// この回でのびた秒数（＝数えた文字数）
     @State private var credited = 0
-    /// 確定した文字数の、これまでの最大（消して書き直しても秒が増えないようにする）
-    @State private var committedHigh = 0
-    /// 変換中の文字で、すでにのばした秒数（変換して文字数が減っても返さない）
-    @State private var composingCredit = 0
-    @State private var composing = false
+    /// 削除キーなどで消した文字数の「借り」。次に増えた分からまず返す（消して書き直しても秒が増えない）
+    @State private var debt = 0
     @State private var finished = false
     @State private var bonusTick = 0
     /// 開いた時点の今日の文（10秒追加のとき。入力欄に入れて、前の文も直せる）
@@ -68,31 +65,19 @@ struct WriteView: View {
         }
     }
 
-    /// 文字が変わるたびに呼ぶ。1 文字ふえるごとに 1 秒のばす。
-    /// - 変換中のかなは、ふえた分だけその場でのばす（変換を待たずに秒が増える）
-    /// - 変換・予測変換で確定したとき、確定した文字の方が多ければ差の分を足す。少なくなっても返さない
-    /// - 確定した文字は「これまでの最大」を超えた分だけ数える（消して書き直しても増えない）
-    private func handleEdit(committed: String, marked: String) {
-        guard !finished else { return }
-        let c = Self.count(committed)
-        let m = Self.count(marked)
-        if m > 0 {
-            composing = true
-            let provisional = max(0, c + m - committedHigh)
-            if provisional > composingCredit {
-                grant(provisional - composingCredit)
-                composingCredit = provisional
-            }
-        } else if composing {
-            let growth = max(0, c - committedHigh)
-            if growth > composingCredit { grant(growth - composingCredit) }
-            committedHigh = max(committedHigh, c)
-            composingCredit = 0
-            composing = false
-        } else if c > committedHigh {
-            grant(c - committedHigh)
-            committedHigh = c
-        }
+    /// 文字が増えたとき（DiaryTextView から）。借りを先に返し、残りの分だけ秒をのばす。
+    /// 変換中・確定・予測変換・貼り付けの区別はしない（変換で文字数が減っても秒は返さない）
+    private func handleGrow(_ n: Int) {
+        guard !finished, n > 0 else { return }
+        let paid = min(debt, n)
+        debt -= paid
+        grant(n - paid)
+    }
+
+    /// 削除キー・切り取り・上書きで文字が消えたとき
+    private func handleRemove(_ n: Int) {
+        guard !finished, n > 0 else { return }
+        debt += n
     }
 
     private func grant(_ n: Int) {
@@ -138,7 +123,14 @@ struct WriteView: View {
     private var timerRing: some View {
         let progress = finished ? 0 : remaining / max(Self.baseSeconds, deadline.timeIntervalSince(start))
         let urgent = remaining < 3 && !finished
-        return StopwatchRing(progress: progress) {
+        return ZStack {
+            Circle().stroke(Color.dlCardTint, lineWidth: 12)
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
+                        style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(.spring(duration: 0.3), value: credited)
             VStack(spacing: 0) {
                 Text(finished ? "0" : "\(Int(ceil(remaining)))")
                     .font(.system(size: 58, weight: .bold, design: .rounded))
@@ -150,12 +142,10 @@ struct WriteView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundColor(.dlTextSub)
             }
-        }
-        .animation(.spring(duration: 0.3), value: credited)
-        .overlay {
             BonusPop(trigger: bonusTick)
-                .offset(x: 62, y: -40)
+                .offset(x: 62, y: -52)
         }
+        .frame(width: 150, height: 150)
         .padding(.top, 4)
     }
 
@@ -168,9 +158,8 @@ struct WriteView: View {
                         .padding(.top, 8)
                         .padding(.leading, 5)
                 }
-                DiaryTextView(text: $text, isEditable: !finished, focus: focused) { committed, marked in
-                    handleEdit(committed: committed, marked: marked)
-                }
+                DiaryTextView(text: $text, isEditable: !finished, focus: focused,
+                              onGrow: handleGrow, onRemove: handleRemove)
             }
             .padding(10)
             .frame(minHeight: 120, maxHeight: finished ? 220 : .infinity)
@@ -234,10 +223,8 @@ struct WriteView: View {
     private func begin() {
         original = existing?.text
         text = original ?? ""
-        committedHigh = charCount
         credited = 0
-        composingCredit = 0
-        composing = false
+        debt = 0
         finished = false
         start = Date()
         now = start
@@ -249,7 +236,7 @@ struct WriteView: View {
             let demo = Array("帰りに見た夕焼けがきれいだった。")
             for (i, ch) in demo.enumerated() {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6 + Double(i) * 0.35) {
-                    if !finished { text.append(ch); handleEdit(committed: text, marked: "") }
+                    if !finished { text.append(ch); handleGrow(1) }
                 }
             }
         }
@@ -298,8 +285,7 @@ private struct BonusPop: View {
     var body: some View {
         Text("+1")
             .font(.system(size: 20, weight: .bold, design: .rounded))
-            .foregroundColor(.dlAmber)
-            .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+            .foregroundColor(.dlPrimary)
             .opacity(shown ? 1 : 0)
             .offset(y: shown ? -10 : 6)
             .onChange(of: trigger) { _, _ in
