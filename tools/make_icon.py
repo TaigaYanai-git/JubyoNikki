@@ -3,109 +3,79 @@
   python3 tools/make_icon.py          # .icon を作る
   python3 tools/make_icon.py --guide  # 黄金比の補助線を描いた SVG も書き出す（docs/icon-guide.svg）
 
-絵柄：ストップウォッチの文字盤に「10」。外枠の 1/6（＝60 秒盤の 10 秒）だけ濃く塗る。
-寸法はすべて黄金比 φ から決める（φ = 1.618…）。
-  - 外枠の直径      = アイコンの幅 ÷ φ
-  - 外枠の太さ      = 外枠の半径 ÷ φ³
-  - 「10」の高さ    = 外枠の内径 ÷ φ
-  - 「0」の幅       = 「10」の高さ ÷ φ（φ の長方形）
-  - 数字の線の太さ  = 「10」の高さ ÷ φ³
-  - 「1」と「0」の間 = 線の太さ ÷ φ
-  - 竜頭の幅        = 外枠の半径 ÷ φ²、高さ = 外枠の太さ
-文字はフォントではなく図形で描く（Icon Composer は SVG の文字を描かないため）。
-Icon Composer は stroke を面として扱うので、輪や数字はすべて塗りの図形（evenodd）で描く。
+絵柄：日めくりの1枚。白いページの上にインディゴの帯、大きな「10」、右下の角がめくれている。
+平らな面だけで描く（ガラスの効果は使わない）。前のタイマーの版は design/candidates/make_icon_timer.py。
+寸法はすべて黄金比 φ（1.618…）から決める。
+  - ページの一辺       = アイコンの幅 ÷ √φ、角の丸み = 一辺 ÷ φ⁵
+  - 上の帯の高さ       = 一辺 ÷ φ³
+  - 「10」の高さ       = 帯の下の高さ ÷ φ、線の太さ = 高さ ÷ φ³、「0」の幅 = 高さ ÷ φ
+  - めくれた角の大きさ = 一辺 ÷ φ⁴
 """
 import json
-import sys as _sys
-from pathlib import Path as _P
-_sys.path.insert(0, str(_P(__file__).resolve().parent))
-import glyphs
-import math
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import glyphs  # noqa: E402
+
 ICON = ROOT / "JubyoNikki" / "AppIcon.icon"
 (ICON / "Assets").mkdir(parents=True, exist_ok=True)
 
-PHI = (1 + 5 ** 0.5) / 2
+PHI = glyphs.PHI
 S = 1024
+f = glyphs.f
 
-R_OUT = S / PHI / 2                 # 316.4
-W_RING = R_OUT / PHI ** 3           # 74.7（はっきり見えるよう太め）
-R_IN = R_OUT - W_RING
-CROWN_W = R_OUT / PHI ** 2          # 120.9
-CROWN_H = W_RING
-STEM_W = CROWN_W / PHI ** 2
-STEM_H = W_RING / PHI
-# 竜頭まで含めた全体の高さの中心をアイコンの中心にそろえる
-TOTAL_H = CROWN_H + STEM_H + 2 * R_OUT
-CX = S / 2
-CY = S / 2 + (TOTAL_H / 2 - R_OUT)
+P = S / PHI ** 0.5                  # ページの一辺 805
+R = P / PHI ** 5                    # 角の丸み 73
+BAND = P / PHI ** 3                 # 上の帯 190
+FOLD = P / PHI ** 4                 # めくれた角 117
+X0 = (S - P) / 2
+Y0 = (S - P) / 2
+X1, Y1 = X0 + P, Y0 + P
 
-H = 2 * R_IN / PHI                  # 「10」の高さ
-W0 = H / PHI                        # 「0」の幅
+H = (P - BAND) / PHI                # 「10」の高さ 380
 T = H / PHI ** 3                    # 線の太さ
+W0 = H / PHI                        # 「0」の幅
 GAP = T / PHI
-FLAG = glyphs.one_flag_width(H, T)  # 「1」の旗が軸から左へ出る長さ（旗の長さ = 高さ ÷ φ²、傾き 1:φ）
-ARC = 60                            # 10 秒（60 秒盤の 1/6）
+total_w = glyphs.one_width(H, T) + GAP + W0
+x1 = S / 2 - total_w / 2 + glyphs.one_flag_width(H, T)   # 「1」の軸の左端
+top = Y0 + BAND + (P - BAND - H) / 2                      # 帯の下の中央
 
 
 def svg(body):
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="{S}" height="{S}" viewBox="0 0 {S} {S}">\n{body}\n</svg>\n'
 
 
-def f(v):
-    return f"{v:.2f}"
+def page_path():
+    """角の丸い正方形。右下だけ斜めに切り落とす（めくれた角）"""
+    return (f"M{f(X0 + R)},{f(Y0)} L{f(X1 - R)},{f(Y0)} Q{f(X1)},{f(Y0)} {f(X1)},{f(Y0 + R)} "
+            f"L{f(X1)},{f(Y1 - FOLD)} L{f(X1 - FOLD)},{f(Y1)} "
+            f"L{f(X0 + R)},{f(Y1)} Q{f(X0)},{f(Y1)} {f(X0)},{f(Y1 - R)} "
+            f"L{f(X0)},{f(Y0 + R)} Q{f(X0)},{f(Y0)} {f(X0 + R)},{f(Y0)} Z")
 
 
-def circle_path(cx, cy, r):
-    return f"M{f(cx - r)},{f(cy)} A{f(r)},{f(r)} 0 1 0 {f(cx + r)},{f(cy)} A{f(r)},{f(r)} 0 1 0 {f(cx - r)},{f(cy)} Z"
+band = (f"M{f(X0)},{f(Y0 + BAND)} L{f(X0)},{f(Y0 + R)} Q{f(X0)},{f(Y0)} {f(X0 + R)},{f(Y0)} "
+        f"L{f(X1 - R)},{f(Y0)} Q{f(X1)},{f(Y0)} {f(X1)},{f(Y0 + R)} L{f(X1)},{f(Y0 + BAND)} Z")
+# めくれた角：切り落とした線を折り目にして、内側へ折り返した三角
+fold = f"M{f(X1)},{f(Y1 - FOLD)} L{f(X1 - FOLD)},{f(Y1 - FOLD)} L{f(X1 - FOLD)},{f(Y1)} Z"
+x0 = x1 + T + GAP
 
 
 def stadium(x, y, w, h):
-    """縦長の角丸（半円の端）の長方形"""
     r = w / 2
     return (f"M{f(x)},{f(y + r)} A{f(r)},{f(r)} 0 0 1 {f(x + w)},{f(y + r)} "
             f"L{f(x + w)},{f(y + h - r)} A{f(r)},{f(r)} 0 0 1 {f(x)},{f(y + h - r)} Z")
 
 
-def pt(r, deg):
-    a = math.radians(deg)
-    return CX + r * math.cos(a), CY + r * math.sin(a)
-
-
-def arc_band(r_in, r_out, a0, a1):
-    """端が丸い弧の帯（a0→a1 度、SVG の角度で -90 が真上）"""
-    rm, rw = (r_in + r_out) / 2, (r_out - r_in) / 2
-    o0, o1 = pt(r_out, a0), pt(r_out, a1)
-    i0, i1 = pt(r_in, a0), pt(r_in, a1)
-    large = 1 if a1 - a0 > 180 else 0
-    return (f"M{f(o0[0])},{f(o0[1])} A{f(r_out)},{f(r_out)} 0 {large} 1 {f(o1[0])},{f(o1[1])} "
-            f"A{f(rw)},{f(rw)} 0 0 1 {f(i1[0])},{f(i1[1])} "
-            f"A{f(r_in)},{f(r_in)} 0 {large} 0 {f(i0[0])},{f(i0[1])} "
-            f"A{f(rw)},{f(rw)} 0 0 1 {f(o0[0])},{f(o0[1])} Z")
-
-
-# 「10」の配置：「1」は旗の先から軸の右端まで、「0」は幅 W0。全体を中央に置く
-one_w = FLAG + T
-total_w = one_w + GAP + W0
-x1 = CX - total_w / 2 + FLAG        # 「1」の軸の左端
-x0 = x1 + T + GAP                   # 「0」の左端
-top = CY - H / 2
-
-# 「1」：軸と、左下へ伸びる旗（軸の上端から 角度 atan(1/φ) で下がる、端の丸い棒）
-one = glyphs.one(x1, top, H, T)  # 一筆で書いた「1」（角と端が丸い）
-zero = (f'<path fill="#000" fill-rule="evenodd" d="{stadium(x0, top, W0, H)} '
-        f'{stadium(x0 + T, top + T, W0 - 2 * T, H - 2 * T)}"/>')
+digits = glyphs.one(x1, top, H, T) + (
+    f'<path fill="#000" fill-rule="evenodd" d="{stadium(x0, top, W0, H)} {stadium(x0 + T, top + T, W0 - 2 * T, H - 2 * T)}"/>')
 
 layers = {
-    "digits": svg(one + zero),
-    "progress": svg(f'<path fill="#000" d="{arc_band(R_IN, R_OUT, -90, -90 + ARC)}"/>'),
-    "ring": svg(f'<path fill="#000" fill-rule="evenodd" d="{circle_path(CX, CY, R_OUT)} {circle_path(CX, CY, R_IN)}"/>'),
-    "crown": svg(
-        f'<rect x="{f(CX - CROWN_W / 2)}" y="{f(CY - R_OUT - STEM_H - CROWN_H)}" width="{f(CROWN_W)}" height="{f(CROWN_H)}" rx="{f(CROWN_H / 2)}" fill="#000"/>'
-        f'<rect x="{f(CX - STEM_W / 2)}" y="{f(CY - R_OUT - STEM_H - 2)}" width="{f(STEM_W)}" height="{f(STEM_H + W_RING / 2)}" fill="#000"/>'),
+    "digits": svg(digits),
+    "fold": svg(f'<path fill="#000" d="{fold}"/>'),
+    "band": svg(f'<path fill="#000" d="{band}"/>'),
+    "page": svg(f'<path fill="#000" d="{page_path()}"/>'),
 }
 for old in (ICON / "Assets").glob("*.svg"):
     old.unlink()
@@ -113,40 +83,30 @@ for name, body in layers.items():
     (ICON / "Assets" / f"{name}.svg").write_text(body)
 
 
-def srgb(rgb):
-    return "srgb:" + ",".join(f"{c:.5f}" for c in rgb) + ",1.00000"
+def srgb(c):
+    return "srgb:" + ",".join(f"{v:.5f}" for v in c) + ",1.00000"
 
 
-def solid(light, dark):
-    return [{"value": {"solid": srgb(light)}}, {"appearance": "dark", "value": {"solid": srgb(dark)}}]
+INDIGO = (0.19, 0.23, 0.55)     # #303B8C（アプリのテーマカラーの初期値と同じ）
+FOLD_C = (0.80, 0.83, 0.95)     # めくれた裏側（淡いインディゴ）
+WHITE = (1, 1, 1)
+BG = (0.93, 0.94, 0.98)         # ページの外（ごく淡い青みの灰色）
+BG_DARK = (0.12, 0.13, 0.22)
 
 
-# 暗い地に白い「10」、10 秒の弧だけ赤（ストップウォッチの針の色）。ライトもダークも同じ配色
-# 深いインディゴの地（夜・内省・信頼）に白い「10」、10 秒の弧は琥珀色（青の補色で、夜の灯りの色）
-BG_TOP = (0.19, 0.23, 0.55)    # #303B8C
-WHITE = (1.0, 1.0, 1.0)
-AMBER = (1.0, 0.76, 0.27)      # 琥珀 #FFC145
-TRACK = (0.31, 0.36, 0.68)     # 外枠の残り
-
-
-def layer(name, light, dark, glass=True):
-    return {"glass": glass, "image-name": f"{name}.svg", "name": name,
+def layer(name, c, dark=None):
+    return {"glass": False, "image-name": f"{name}.svg", "name": name,
             "position": {"scale": 1, "translation-in-points": [0, 0]},
-            "fill-specializations": solid(light, dark)}
+            "fill-specializations": [{"value": {"solid": srgb(c)}},
+                                     {"appearance": "dark", "value": {"solid": srgb(dark or c)}}]}
 
 
 doc = {
-    "fill-specializations": [
-        {"value": {"automatic-gradient": srgb(BG_TOP)}},
-        {"appearance": "dark", "value": {"automatic-gradient": srgb(BG_TOP)}},
-    ],
+    "fill-specializations": [{"value": {"automatic-gradient": srgb(BG)}},
+                             {"appearance": "dark", "value": {"automatic-gradient": srgb(BG_DARK)}}],
     "groups": [
-        {"layers": [layer("digits", WHITE, WHITE)],
-         "shadow": {"kind": "neutral", "opacity": 0.35},
-         "translucency": {"enabled": False, "value": 0}},
-        {"layers": [layer("progress", AMBER, AMBER), layer("crown", WHITE, WHITE),
-                    layer("ring", TRACK, TRACK, glass=False)],
-         "shadow": {"kind": "neutral", "opacity": 0.3},
+        {"layers": [layer("digits", INDIGO), layer("fold", FOLD_C), layer("band", INDIGO), layer("page", WHITE)],
+         "shadow": {"kind": "neutral", "opacity": 0.25},
          "translucency": {"enabled": False, "value": 0}},
     ],
     "supported-platforms": {"circles": ["watchOS"], "squares": "shared"},
@@ -155,11 +115,11 @@ doc = {
 
 if "--guide" in sys.argv:
     g = '<g fill="none" stroke="#e0567a" stroke-width="2" stroke-dasharray="8 6">'
-    g += f'<circle cx="{f(CX)}" cy="{f(CY)}" r="{f(R_OUT)}"/><circle cx="{f(CX)}" cy="{f(CY)}" r="{f(R_IN)}"/>'
+    g += f'<rect x="{f(X0)}" y="{f(Y0)}" width="{f(P)}" height="{f(P)}"/>'
+    g += f'<line x1="{f(X0)}" y1="{f(Y0 + BAND)}" x2="{f(X1)}" y2="{f(Y0 + BAND)}"/>'
     g += f'<rect x="{f(x0)}" y="{f(top)}" width="{f(W0)}" height="{f(H)}"/>'
-    g += f'<rect x="{f(x1 - FLAG)}" y="{f(top)}" width="{f(total_w)}" height="{f(H)}"/>'
     g += '</g>'
-    body = "".join(layers[k].split("\n")[1] for k in ("ring", "progress", "crown", "digits"))
+    body = "".join(layers[k].split("\n")[1] for k in ("page", "band", "fold", "digits"))
     (ROOT / "docs" / "icon-guide.svg").write_text(svg(f'<rect width="{S}" height="{S}" fill="#fff"/><g opacity="0.25">{body}</g>{g}'))
 
-print(f"φ={PHI:.4f} 外枠直径={2 * R_OUT:.1f} 太さ={W_RING:.1f} 数字の高さ={H:.1f} 0の幅={W0:.1f} 線={T:.1f}")
+print(f"φ={PHI:.4f} ページ={P:.0f} 帯={BAND:.0f} 角={FOLD:.0f} 数字の高さ={H:.0f} 線={T:.0f}")

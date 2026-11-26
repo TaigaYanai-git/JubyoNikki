@@ -12,6 +12,7 @@
 		486DF1410B82938010344CB1 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 723227255C95839267399F10 /* GoogleMobileAds */; };
 		590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */; };
 		5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4C2B9E5B04A6888BDA632724 /* AppIcon.icon */; };
+		67D31025A8F716C6EA8B5531 /* Shiori.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF1FBAE46566DF7225440BE /* Shiori.swift */; };
 		7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */; };
 		BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0995464BBCC4D59E5D6A29CF /* SettingsView.swift */; };
 		D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */; };
@@ -34,6 +35,7 @@
 		D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Ads.xcconfig; sourceTree = "<group>"; };
 		D764E4B38C2A0665FA050FE8 /* WriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteView.swift; sourceTree = "<group>"; };
 		E7E8ADA7363799F1B19AABC5 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
+		EAF1FBAE46566DF7225440BE /* Shiori.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shiori.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 			children = (
 				E7E8ADA7363799F1B19AABC5 /* Reminder.swift */,
 				80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */,
+				EAF1FBAE46566DF7225440BE /* Shiori.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -205,6 +208,7 @@
 				E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */,
 				D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */,
 				BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */,
+				67D31025A8F716C6EA8B5531 /* Shiori.swift in Sources */,
 				D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */,
 				7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */,
 				DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */,

@@ -14,6 +14,10 @@ struct WriteView: View {
     /// 書く日（ふだんは今日。広告を見て昨日を取り戻すときは昨日）
     var dayKey: String = Day.key()
     var recovering = false
+    /// しおりを使って昨日を書く（保存できたら 1 枚減らす）
+    var usesShiori = false
+    /// 今日の分を書いて、7 日続いたのでしおりをもらえた
+    @State private var gotShiori = false
 
     @State private var text = ""
     @State private var start = Date()
@@ -181,6 +185,12 @@ struct WriteView: View {
                     Text("\(Int(deadline.timeIntervalSince(start).rounded()))秒の日記を書きました")
                         .font(.subheadline)
                         .foregroundColor(.dlTextSub)
+                    if gotShiori {
+                        Label("\(Shiori.streakPerShiori)日続いたので、しおりを1枚もらいました", systemImage: "bookmark.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(.dlPrimary)
+                            .padding(.top, 6)
+                    }
                 }
                 .padding(.bottom, 6)
             }
@@ -242,6 +252,11 @@ struct WriteView: View {
             let entry = DiaryEntry(dayKey: todayKey, text: body, seconds: used)
             entry.recovered = recovering
             context.insert(entry)
+            if recovering && usesShiori { Shiori.shared.use() }
+            if !recovering {
+                let keys = Set(entries.map(\.dayKey)).union([todayKey])
+                gotShiori = Shiori.shared.awardIfNeeded(streak: Day.streak(keys: keys), todayKey: todayKey)
+            }
         }
         try? context.save()
         Task { await Reminder.shared.reschedule() }

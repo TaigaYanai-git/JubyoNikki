@@ -6,7 +6,9 @@ struct TodayView: View {
     @ObservedObject private var theme = ThemeStore.shared
     @ObservedObject private var reminder = Reminder.shared
     @ObservedObject private var ads = RewardedAds.shared
+    @ObservedObject private var shiori = Shiori.shared
     @State private var showRecover = false
+    @State private var recoverWithShiori = false
     @Binding var showWrite: Bool
     /// 表示している日（左右のボタンか横スワイプで前後の日へ。未来には進めない）
     @State private var day = Calendar.current.date(
@@ -65,7 +67,7 @@ struct TodayView: View {
                 if let y = cal.date(byAdding: .day, value: -1, to: cal.startOfDay(for: Date())), day == y { goToday() }
             }
             .fullScreenCover(isPresented: $showRecover) {
-                WriteView(dayKey: yesterdayKey, recovering: true)
+                WriteView(dayKey: yesterdayKey, recovering: true, usesShiori: recoverWithShiori)
             }
         }
     }
@@ -139,9 +141,20 @@ struct TodayView: View {
 
     /// 昨日が空いていて、それより前に1日でも書いている人だけ（始めたばかりの人には出さない）
     private var canRecover: Bool {
-        ads.isAvailable
+        (shiori.count > 0 || ads.isAvailable)
             && !entries.contains { $0.dayKey == yesterdayKey }
             && entries.contains { $0.dayKey < yesterdayKey }
+    }
+
+    private func watchAdToRecover() {
+        Task {
+            await ads.show { ok in
+                if ok {
+                    recoverWithShiori = false
+                    showRecover = true
+                }
+            }
+        }
     }
 
     /// 前の日まで続いていれば、昨日を書くと連続がつながる
@@ -162,36 +175,59 @@ struct TodayView: View {
                     .cornerRadius(12)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("昨日の日記がありません").font(.headline).foregroundColor(.dlText)
-                    Text(wouldReconnect ? "広告を見ると、昨日の分を10秒で書けます。連続記録がつながります。"
-                                        : "広告を見ると、昨日の分を10秒で書けます。")
+                    Text((shiori.count > 0 ? "しおりを1枚使うと" : "広告を見ると")
+                         + "、昨日の分を10秒で書けます。" + (wouldReconnect ? "連続記録がつながります。" : ""))
                         .font(.caption).foregroundColor(.dlTextSub)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            Button {
-                Task {
-                    await ads.show { ok in if ok { showRecover = true } }
+            if shiori.count > 0 {
+                // 1 段目：しおり（広告なし）
+                Button {
+                    recoverWithShiori = true
+                    showRecover = true
+                } label: {
+                    Label("しおりを使って昨日を書く", systemImage: "bookmark.fill")
                 }
-            } label: {
-                HStack(spacing: 8) {
-                    if ads.isLoading { ProgressView().tint(.dlPrimary) }
-                    else { Image(systemName: "play.rectangle") }
-                    Text("広告を見て昨日を書く")
+                .buttonStyle(PrimaryButtonStyle())
+                HStack {
+                    Text("しおり 残り\(shiori.count)枚")
+                    Spacer()
+                    if ads.isAvailable {
+                        // しおりを残しておきたい人は広告でも書ける
+                        Button("広告を見て書く") { watchAdToRecover() }
+                            .disabled(ads.isLoading)
+                    }
                 }
+                .font(.caption)
+                .foregroundColor(.dlTextSub)
+                .tint(.dlPrimary)
+            } else {
+                // 2 段目：広告
+                Button { watchAdToRecover() } label: {
+                    HStack(spacing: 8) {
+                        if ads.isLoading { ProgressView().tint(.dlPrimary) }
+                        else { Image(systemName: "play.rectangle") }
+                        Text("広告を見て昨日を書く")
+                    }
+                }
+                .buttonStyle(SecondaryButtonStyle())
+                .disabled(ads.isLoading)
+                Text("しおりは\(Shiori.streakPerShiori)日続けて書くと1枚もらえます")
+                    .font(.caption)
+                    .foregroundColor(.dlTextSub)
             }
-            .buttonStyle(SecondaryButtonStyle())
-            .disabled(ads.isLoading)
             if let message = ads.errorMessage {
                 Text(message).font(.caption).foregroundColor(.dlTextSub)
             }
         }
         .dlCard(padding: 18)
         .task {
-            await ads.preload()
+            if shiori.count == 0 || ads.isAvailable { await ads.preload() }
             #if DEBUG
             // -autoRecover：確認用。カードのボタンを押したのと同じ流れを自動で通す
             if ProcessInfo.processInfo.arguments.contains("-autoRecover") {
-                await ads.show { ok in if ok { showRecover = true } }
+                watchAdToRecover()
             }
             #endif
         }
@@ -307,6 +343,8 @@ struct TodayView: View {
             stat("\(entries.count)日", "書いた日")
             Divider().frame(height: 40).overlay(Color.dlDivider)
             stat("\(totalChars)", "これまでの文字")
+            Divider().frame(height: 40).overlay(Color.dlDivider)
+            stat("\(shiori.count)枚", "しおり")
         }
         .dlCard(padding: 18)
     }
