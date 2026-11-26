@@ -1,0 +1,369 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3093DA6A88EDF7D3DF833EF2 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D82F60A8120D4872F44F11 /* CalendarView.swift */; };
+		3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */; };
+		590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */; };
+		5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4C2B9E5B04A6888BDA632724 /* AppIcon.icon */; };
+		7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */; };
+		BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0995464BBCC4D59E5D6A29CF /* SettingsView.swift */; };
+		D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821E372AF4D1359A6B242F31 /* Theme.swift */; };
+		DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D764E4B38C2A0665FA050FE8 /* WriteView.swift */; };
+		E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E8ADA7363799F1B19AABC5 /* Reminder.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0995464BBCC4D59E5D6A29CF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JubyoNikkiApp.swift; sourceTree = "<group>"; };
+		4C2B9E5B04A6888BDA632724 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		790BB9CB2BB91B8417E9BA97 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		821E372AF4D1359A6B242F31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		A0D82F60A8120D4872F44F11 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JubyoNikki.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
+		D764E4B38C2A0665FA050FE8 /* WriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteView.swift; sourceTree = "<group>"; };
+		E7E8ADA7363799F1B19AABC5 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0C85C23DAAFF14094C4B0D84 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A0D82F60A8120D4872F44F11 /* CalendarView.swift */,
+				0995464BBCC4D59E5D6A29CF /* SettingsView.swift */,
+				821E372AF4D1359A6B242F31 /* Theme.swift */,
+				8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */,
+				D764E4B38C2A0665FA050FE8 /* WriteView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		239FDE6F97AE07106CB86293 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E7E8ADA7363799F1B19AABC5 /* Reminder.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		381885B88EE5133157FE5DDB /* App */ = {
+			isa = PBXGroup;
+			children = (
+				270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		3EA7CE4B6BE81D3D498B3675 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4115F4402F1E20859106CDFD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9BB4084FB25603925DD0E4AC = {
+			isa = PBXGroup;
+			children = (
+				B5E3146FF74B2C96CECCBADF /* JubyoNikki */,
+				3EA7CE4B6BE81D3D498B3675 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B5E3146FF74B2C96CECCBADF /* JubyoNikki */ = {
+			isa = PBXGroup;
+			children = (
+				4C2B9E5B04A6888BDA632724 /* AppIcon.icon */,
+				790BB9CB2BB91B8417E9BA97 /* Info.plist */,
+				381885B88EE5133157FE5DDB /* App */,
+				4115F4402F1E20859106CDFD /* Models */,
+				239FDE6F97AE07106CB86293 /* Services */,
+				0C85C23DAAFF14094C4B0D84 /* Views */,
+			);
+			path = JubyoNikki;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6B8D88A52BDBFCF943266B2A /* JubyoNikki */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02276867E6A140990D48414E /* Build configuration list for PBXNativeTarget "JubyoNikki" */;
+			buildPhases = (
+				C0CDF31F777A5F9E996E4A09 /* Sources */,
+				FBB53D625B4F4BF29710F643 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JubyoNikki;
+			packageProductDependencies = (
+			);
+			productName = JubyoNikki;
+			productReference = A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		478350FCD658B7E897708EED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					6B8D88A52BDBFCF943266B2A = {
+						DevelopmentTeam = 367X9MY986;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 6983A8526ECE579C088BBABB /* Build configuration list for PBXProject "JubyoNikki" */;
+			developmentRegion = ja;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				ja,
+			);
+			mainGroup = 9BB4084FB25603925DD0E4AC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3EA7CE4B6BE81D3D498B3675 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6B8D88A52BDBFCF943266B2A /* JubyoNikki */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FBB53D625B4F4BF29710F643 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C0CDF31F777A5F9E996E4A09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3093DA6A88EDF7D3DF833EF2 /* CalendarView.swift in Sources */,
+				590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */,
+				3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */,
+				E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */,
+				BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */,
+				D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */,
+				7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */,
+				DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D2CF5E8F01FAF15E9A5AD34 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = JubyoNikki/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.taigayanai.jubyonikki;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		54120665C84D52A90606A472 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 367X9MY986;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		813653054B9D989077CEE593 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = JubyoNikki/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.taigayanai.jubyonikki;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9135EAEC72E853AA07068B5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 367X9MY986;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		02276867E6A140990D48414E /* Build configuration list for PBXNativeTarget "JubyoNikki" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				813653054B9D989077CEE593 /* Debug */,
+				1D2CF5E8F01FAF15E9A5AD34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6983A8526ECE579C088BBABB /* Build configuration list for PBXProject "JubyoNikki" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9135EAEC72E853AA07068B5C /* Debug */,
+				54120665C84D52A90606A472 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 478350FCD658B7E897708EED /* Project object */;
+}
