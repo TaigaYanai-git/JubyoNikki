@@ -8,6 +8,16 @@ struct TodayView: View {
     @ObservedObject private var ads = RewardedAds.shared
     @State private var showRecover = false
     @Binding var showWrite: Bool
+    /// 表示している日（左右のボタンか横スワイプで前後の日へ。未来には進めない）
+    @State private var day = Calendar.current.date(
+        byAdding: .day, value: -UserDefaults.standard.integer(forKey: "dayOffset"),  // -dayOffset N：撮影用に N 日前を開く
+        to: Calendar.current.startOfDay(for: Date()))!
+    /// 日を移るときに新しい日が入ってくる向き
+    @State private var slideFrom: Edge = .trailing
+
+    private var isToday: Bool { Calendar.current.isDateInToday(day) }
+    private var dayKey: String { Day.key(day) }
+    private var shown: DiaryEntry? { entries.first { $0.dayKey == dayKey } }
 
     private var today: DiaryEntry? { entries.first { $0.dayKey == Day.key() } }
     private var streak: Int { Day.streak(keys: Set(entries.map(\.dayKey))) }
@@ -17,24 +27,110 @@ struct TodayView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    Text(Day.label(Date()))
-                        .font(.title3.weight(.semibold))
-                        .foregroundColor(.dlText)
-                        .padding(.top, 4)
-                    if let today { writtenCard(today) } else { startCard }
-                    if canRecover { recoverCard }
-                    if reminder.notAsked { askCard }
+                    dateHeader
+                    VStack(spacing: 20) {
+                        if isToday {
+                            if let today { writtenCard(today) } else { startCard }
+                            if canRecover { recoverCard }
+                            if reminder.notAsked { askCard }
+                        } else if let shown {
+                            writtenCard(shown)
+                        } else if dayKey == yesterdayKey && canRecover {
+                            recoverCard
+                        } else {
+                            emptyDayCard
+                        }
+                    }
+                    .id(dayKey)
+                    .transition(.asymmetric(insertion: .move(edge: slideFrom).combined(with: .opacity),
+                                            removal: .opacity))
                     statsCard
-                    if !entries.filter({ $0.dayKey != Day.key() }).isEmpty { recent }
+                    if isToday && !entries.filter({ $0.dayKey != Day.key() }).isEmpty { recent }
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)
             }
-            .dlScreen("今日")
+            // 横にスワイプして前後の日へ（縦のスクロールとは向きで見分ける）
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 30).onEnded { v in
+                    let w = v.translation.width, h = v.translation.height
+                    guard abs(w) > 60, abs(w) > abs(h) * 1.5 else { return }
+                    shiftDay(w < 0 ? 1 : -1)
+                }
+            )
+            .dlScreen(isToday ? "今日" : "この日の日記")
+            // 開いたまま日付が変わったら、昨日（だった今日）を見ていた人は新しい今日へ
+            .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
+                let cal = Calendar.current
+                if let y = cal.date(byAdding: .day, value: -1, to: cal.startOfDay(for: Date())), day == y { goToday() }
+            }
             .fullScreenCover(isPresented: $showRecover) {
                 WriteView(dayKey: yesterdayKey, recovering: true)
             }
         }
+    }
+
+    // MARK: 日付（Our Music の今日の画面と同じ「‹ 日付 ›」）
+
+    private var dateHeader: some View {
+        HStack {
+            circleButton("chevron.left") { shiftDay(-1) }
+            Spacer()
+            VStack(spacing: 2) {
+                Text(Day.label(day))
+                    .font(.title3.weight(.semibold))
+                    .foregroundColor(.dlText)
+                if !isToday {
+                    Button("今日に戻る") { goToday() }
+                        .font(.caption)
+                        .foregroundColor(.dlPrimary)
+                }
+            }
+            Spacer()
+            circleButton("chevron.right") { shiftDay(1) }
+                .opacity(isToday ? 0.3 : 1)
+                .disabled(isToday)
+        }
+        .padding(.top, 4)
+    }
+
+    private func circleButton(_ symbol: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.body.weight(.semibold))
+                .foregroundColor(.dlPrimary)
+                .frame(width: 36, height: 36)
+                .background(Color.dlPrimaryBg)
+                .clipShape(Circle())
+        }
+    }
+
+    private func shiftDay(_ delta: Int) {
+        let cal = Calendar.current
+        guard let next = cal.date(byAdding: .day, value: delta, to: day),
+              next <= cal.startOfDay(for: Date()) else { return }
+        slideFrom = delta > 0 ? .trailing : .leading
+        withAnimation(.easeOut(duration: 0.25)) { day = next }
+    }
+
+    private func goToday() {
+        slideFrom = .trailing
+        withAnimation(.easeOut(duration: 0.25)) { day = Calendar.current.startOfDay(for: Date()) }
+    }
+
+    /// 書いていない過去の日（昨日は広告のカード、それより前はこれ）
+    private var emptyDayCard: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "book.closed")
+                .font(.system(size: 28, weight: .medium))
+                .foregroundColor(.dlTextLight)
+            Text("この日の日記はありません")
+                .font(.headline)
+                .foregroundColor(.dlTextSub)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 28)
+        .dlCard()
     }
 
     private var yesterdayKey: String {
@@ -167,7 +263,8 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill").foregroundColor(.dlPrimary)
-                Text("今日の日記").font(.subheadline.weight(.semibold)).foregroundColor(.dlTextSub)
+                Text(isToday ? "今日の日記" : (e.recovered ? "あとから書いた日記" : "この日の日記"))
+                    .font(.subheadline.weight(.semibold)).foregroundColor(.dlTextSub)
                 Spacer()
                 Text("\(Int(e.seconds.rounded()))秒")
                     .font(.caption.weight(.semibold))
@@ -183,13 +280,16 @@ struct TodayView: View {
                 .padding(16)
                 .background(Color.dlCardTint)
                 .cornerRadius(14)
-            Button {
-                showWrite = true
-            } label: {
-                Label("10秒追加", systemImage: "plus")
+            // 前の日は直せない（10秒追加は今日だけ）
+            if isToday {
+                Button {
+                    showWrite = true
+                } label: {
+                    Label("10秒追加", systemImage: "plus")
+                }
+                .buttonStyle(SecondaryButtonStyle())
             }
-            .buttonStyle(SecondaryButtonStyle())
-            if let next = reminder.nextFire(writtenToday: true) {
+            if isToday, let next = reminder.nextFire(writtenToday: true) {
                 Label("次のお知らせは明日 \(reminder.timeLabel)", systemImage: "bell")
                     .font(.caption)
                     .foregroundColor(.dlTextSub)
