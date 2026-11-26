@@ -2,16 +2,16 @@ import SwiftData
 import SwiftUI
 import UIKit
 
-/// 10 秒だけ書ける画面。書いている間（最後に打ってから freeze 秒）は時計が止まり、
-/// 手が止まっている時間だけ減る。止まっている間は輪がカクカク揺れる。
-/// 文字数を数えないので、変換・予測変換・削除のどれでも同じように止まる。
+/// 10 秒だけ書ける画面。書いている間（最後に打ってから freeze 秒）は時計が反転して
+/// 持ち時間が増え（最大 10 秒、ゲージは緑）、手が止まっている間だけ減る。
+/// 文字数を数えないので、変換・予測変換・削除のどれでも同じように増える。
 struct WriteView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Query private var entries: [DiaryEntry]
 
     static let baseSeconds: Double = 10
-    /// 最後に打ってから時計が止まっている時間
+    /// 最後に打ってから「書いている」とみなす時間
     static let freeze: Double = 1.2
 
     /// 書く日（ふだんは今日。広告を見て昨日を取り戻すときは昨日）
@@ -25,13 +25,13 @@ struct WriteView: View {
     @State private var text = ""
     @State private var start = Date()
     @State private var now = Date()
-    /// 残りの持ち時間（手が止まっているときだけ減る）
+    /// 残りの持ち時間（書いている間は増え、手が止まっているときは減る。最大 baseSeconds）
     @State private var remaining = WriteView.baseSeconds
     @State private var lastTick = Date()
     /// 最後に打った時刻
     @State private var lastType = Date.distantPast
-    /// 書いていて時計が止まっていた時間の合計
-    @State private var pausedTotal: Double = 0
+    /// 書いて取り戻した秒数の合計
+    @State private var gainedTotal: Double = 0
     @State private var finished = false
     /// 書き終わったときの、書いていた秒数（書き終わりの画面に出す）
     @State private var usedSeconds: Double = 0
@@ -39,13 +39,17 @@ struct WriteView: View {
     @State private var original: String?
     @State private var focused = false
 
+    /// 書いている間のゲージの色
+    static let green = Color(red: 0.22, green: 0.68, blue: 0.45)
+    static let greenEnd = Color(red: 0.45, green: 0.80, blue: 0.52)
+
     private let ticker = Timer.publish(every: 1.0 / 30, on: .main, in: .common).autoconnect()
     private let haptic = UIImpactFeedbackGenerator(style: .soft)
 
     private var todayKey: String { dayKey }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
     private var charCount: Int { Self.count(text) }
-    /// いま時計が止まっているか（書いている最中）
+    /// いま書いている最中か（時計が反転して増える）
     private var frozen: Bool { !finished && now.timeIntervalSince(lastType) < Self.freeze }
 
     /// 数える文字（空白と改行は数えない）
@@ -70,7 +74,9 @@ struct WriteView: View {
             lastTick = t
             now = t
             if t.timeIntervalSince(lastType) < Self.freeze {
-                pausedTotal += dt
+                let gain = min(dt, Self.baseSeconds - remaining)
+                remaining += gain
+                gainedTotal += gain
             } else {
                 remaining = max(0, remaining - dt)
                 if remaining <= 0 { finish() }
@@ -120,29 +126,29 @@ struct WriteView: View {
     private var timerRing: some View {
         let progress = finished ? 0 : remaining / Self.baseSeconds
         let urgent = remaining < 3 && !finished
-        // 止まっている間は、ゲージの先がその場で戻ったり進んだりする（1/10 秒ごと、2.5% ぶん）
-        let wobble: Double = frozen && Int(now.timeIntervalSinceReferenceDate * 10) % 2 == 0 ? -0.025 : 0
         return ZStack {
             Circle().stroke(Color.dlCardTint, lineWidth: 12)
             Circle()
-                .trim(from: 0, to: max(0, min(1, progress + wobble)))
-                .stroke(LinearGradient(colors: [.dlPrimary, .dlPrimaryEnd], startPoint: .topLeading, endPoint: .bottomTrailing),
+                .trim(from: 0, to: max(0, min(1, progress)))
+                .stroke(LinearGradient(colors: frozen ? [Self.green, Self.greenEnd] : [.dlPrimary, .dlPrimaryEnd],
+                                       startPoint: .topLeading, endPoint: .bottomTrailing),
                         style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .rotationEffect(.degrees(-90))
+                .animation(.easeInOut(duration: 0.2), value: frozen)
             VStack(spacing: 0) {
                 Text(finished ? "0" : "\(Int(ceil(remaining)))")
                     .font(.system(size: 58, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundColor(urgent ? Color(red: 0.88, green: 0.36, blue: 0.40) : .dlText)
-                    .contentTransition(.numericText(countsDown: true))
+                    .foregroundColor(frozen ? Self.green : urgent ? Color(red: 0.88, green: 0.36, blue: 0.40) : .dlText)
+                    .contentTransition(.numericText(countsDown: !frozen))
                     .animation(.snappy, value: Int(ceil(remaining)))
-                // 止まっている間は「一時停止」、動いている間は「秒」
+                // 書いている間は「戻っています」、手が止まっている間は「秒」
                 HStack(spacing: 3) {
-                    if frozen { Image(systemName: "pause.fill").font(.system(size: 9, weight: .bold)) }
-                    Text(frozen ? "止まっています" : "秒")
+                    if frozen { Image(systemName: "arrow.counterclockwise").font(.system(size: 9, weight: .bold)) }
+                    Text(frozen ? (remaining >= Self.baseSeconds ? "満タン" : "戻っています") : "秒")
                 }
                 .font(.caption.weight(.semibold))
-                .foregroundColor(frozen ? .dlPrimary : .dlTextSub)
+                .foregroundColor(frozen ? Self.green : .dlTextSub)
             }
         }
         .frame(width: 150, height: 150)
@@ -167,7 +173,7 @@ struct WriteView: View {
             HStack {
                 Text("\(charCount)文字")
                 Spacer()
-                Text("書いて止めた \(Int(pausedTotal))秒")
+                Text("書いて戻した \(Int(gainedTotal))秒")
             }
             .font(.caption.weight(.semibold))
             .foregroundColor(.dlTextSub)
@@ -177,7 +183,7 @@ struct WriteView: View {
     }
 
     private var hint: some View {
-        Text("書いている間は、時計が止まります")
+        Text("書いている間は、時計が戻ります（最大10秒）")
             .font(.footnote)
             .foregroundColor(.dlTextSub)
             .padding(.bottom, 8)
@@ -236,7 +242,7 @@ struct WriteView: View {
         lastTick = start
         lastType = .distantPast
         remaining = Self.baseSeconds
-        pausedTotal = 0
+        gainedTotal = 0
         haptic.prepare()
         focused = true
         // -typeDemo：撮影用に1文字ずつ自動で書く（+1 秒の動きを確かめる）

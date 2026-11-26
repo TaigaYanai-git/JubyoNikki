@@ -1,8 +1,8 @@
 import SwiftUI
 import UIKit
 
-/// 日記の入力欄（UITextView）。打つたびに onType を呼ぶ（書いている間は時計を止めるため）。
-/// textViewDidChange は変換中の文字が変わるたびにも呼ばれるので、かな入力・変換・予測変換・削除のどれでも止まる。
+/// 日記の入力欄（UITextView）。打つたびに onType を呼ぶ（書いている間は時計を戻すため）。
+/// textViewDidChange は変換中の文字が変わるたびにも呼ばれるので、かな入力・変換・予測変換・削除のどれでも戻る。
 struct DiaryTextView: UIViewRepresentable {
     @Binding var text: String
     var isEditable: Bool
@@ -47,7 +47,7 @@ struct DiaryTextView: UIViewRepresentable {
     }
 }
 
-/// キーを押したこと自体も知らせる UITextView（文字が変わらないキー操作でも時計を止める）
+/// キーを押したこと自体も知らせる UITextView（文字が変わらないキー操作でも時計を戻す）
 final class TypingTextView: UITextView {
     var onKey: (() -> Void)?
 
