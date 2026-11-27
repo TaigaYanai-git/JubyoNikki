@@ -13,7 +13,7 @@ struct JubyoWidget: Widget {
             JubyoWidgetView(entry: entry)
         }
         .configurationDisplayName("10秒日記")
-        .description("連続日数と今日のお題。タップするとすぐ書きはじめます。")
+        .description("連続日数と今日書いたか。タップするとすぐ書きはじめます。")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -67,10 +67,10 @@ struct JubyoWidgetView: View {
                 HStack(spacing: 16) {
                     ring
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(done ? "今日の日記" : "今日のお題")
+                        Text(done ? "今日の日記" : "今日はまだ")
                             .font(.caption.weight(.semibold))
                             .foregroundColor(sub)
-                        Text(done ? snap.lastText : Prompt.of(entry.date))
+                        Text(done ? snap.lastText : "10秒だけ、今日のことを。")
                             .font(.subheadline.weight(.semibold))
                             .foregroundColor(text)
                             .lineLimit(3)

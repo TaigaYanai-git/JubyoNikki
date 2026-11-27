@@ -159,8 +159,13 @@ struct WriteView: View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
-                    Text(Prompt.of(Day.date(from: dayKey) ?? Date()))
-                        .foregroundColor(.dlTextLight)
+                    // 書くことがない日のために、日替わりのヒントを薄く出す
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("今日あったこと、ひとことで。")
+                        Text("書くことがない時のヒント：\(Prompt.of(Day.date(from: dayKey) ?? Date()))")
+                            .font(.subheadline)
+                    }
+                    .foregroundColor(.dlTextLight)
                         .padding(.top, 8)
                         .padding(.leading, 5)
                 }

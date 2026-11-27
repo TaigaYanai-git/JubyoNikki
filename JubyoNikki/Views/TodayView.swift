@@ -308,18 +308,6 @@ struct TodayView: View {
                     .font(.subheadline)
                     .foregroundColor(.dlTextSub)
             }
-            // 日替わりのお題（迷う日の助け。書き込み画面の薄い文字と同じ）
-            HStack(spacing: 8) {
-                Text("今日のお題")
-                    .font(.caption.weight(.bold))
-                    .foregroundColor(.dlPrimary)
-                    .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(Color.dlPrimaryBg)
-                    .clipShape(Capsule())
-                Text(Prompt.of())
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(.dlText)
-            }
             Button {
                 showWrite = true
             } label: {

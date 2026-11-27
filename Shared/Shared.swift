@@ -56,7 +56,7 @@ enum SharedDay {
     static func key(_ date: Date = Date()) -> String { formatter.string(from: date) }
 }
 
-/// 日替わりのお題（入力欄の薄い文字）。同じ日はアプリでもウィジェットでも同じお題
+/// 書くことがない時のヒント（書く画面の入力欄に薄く出す）。日替わり
 enum Prompt {
     static let all = [
         "今日いちばん笑ったこと",
