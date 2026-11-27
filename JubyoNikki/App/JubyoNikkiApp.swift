@@ -31,6 +31,12 @@ struct RootView: View {
     @State private var tab = UserDefaults.standard.integer(forKey: "tab")  // -tab N で撮影用に選べる
     @State private var showWrite = ProcessInfo.processInfo.arguments.contains("-write")
 
+    private var writtenToday: Bool {
+        let key = Day.key()
+        let d = FetchDescriptor<DiaryEntry>(predicate: #Predicate { $0.dayKey == key })
+        return ((try? context.fetchCount(d)) ?? 0) > 0
+    }
+
     var body: some View {
         TabView(selection: $tab) {
             TodayView(showWrite: $showWrite)
@@ -46,6 +52,12 @@ struct RootView: View {
         .tint(.dlPrimary)
         .preferredColorScheme(theme.isDark ? .dark : .light)
         .fullScreenCover(isPresented: $showWrite) { WriteView() }
+        // ウィジェットから：まだなら 10 秒をすぐ始める、書いた日は今日の画面へ
+        .onOpenURL { url in
+            tab = 0
+            if url.host == "write" && !writtenToday { showWrite = true }
+        }
+        .onChange(of: theme.accentIndex) { _, _ in WidgetSync.update(context) }
         .onChange(of: router.openWrite) { _, open in
             guard open else { return }
             router.openWrite = false
@@ -59,9 +71,13 @@ struct RootView: View {
                 return ((try? context.fetchCount(d)) ?? 0) > 0
             }
             await Reminder.shared.refresh()
+            WidgetSync.update(context)
         }
         .onChange(of: phase) { _, p in
-            if p == .active { Task { await Reminder.shared.refresh() } }
+            if p == .active {
+                Task { await Reminder.shared.refresh() }
+                WidgetSync.update(context)
+            }
         }
     }
 }

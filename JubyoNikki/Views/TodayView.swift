@@ -34,6 +34,7 @@ struct TodayView: View {
                         if isToday {
                             if let today { writtenCard(today) } else { startCard }
                             if canRecover { recoverCard }
+                            if !memories.isEmpty { memoriesCard }
                             if reminder.notAsked { askCard }
                         } else if let shown {
                             writtenCard(shown)
@@ -105,6 +106,56 @@ struct TodayView: View {
                 .background(Color.dlPrimaryBg)
                 .clipShape(Circle())
         }
+    }
+
+    /// あの日の自分：1年前・半年前・先月・先週の同じ日に書いた日記
+    private var memories: [(label: String, date: Date, entry: DiaryEntry)] {
+        let cal = Calendar.current
+        let now = cal.startOfDay(for: Date())
+        let spans: [(String, Calendar.Component, Int)] = [
+            ("1年前の今日", .year, -1), ("半年前の今日", .month, -6), ("先月の今日", .month, -1), ("先週の今日", .day, -7),
+        ]
+        return spans.compactMap { label, unit, n in
+            guard let d = cal.date(byAdding: unit, value: n, to: now),
+                  let e = entries.first(where: { $0.dayKey == Day.key(d) }) else { return nil }
+            return (label, d, e)
+        }
+    }
+
+    private var memoriesCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("あの日の自分", systemImage: "clock.arrow.circlepath")
+                .font(.subheadline.weight(.semibold))
+                .foregroundColor(.dlTextSub)
+            ForEach(memories, id: \.label) { m in
+                Button {
+                    slideFrom = .leading
+                    withAnimation(.easeOut(duration: 0.25)) { day = m.date }
+                } label: {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text(m.label)
+                                .font(.caption.weight(.bold))
+                                .foregroundColor(.dlPrimary)
+                            Spacer()
+                            Text(Day.label(m.date))
+                                .font(.caption)
+                                .foregroundColor(.dlTextLight)
+                        }
+                        Text(m.entry.text)
+                            .font(.body)
+                            .foregroundColor(.dlText)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(14)
+                    .background(Color.dlCardTint)
+                    .cornerRadius(14)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .dlCard(padding: 18)
     }
 
     private func shiftDay(_ delta: Int) {
@@ -256,6 +307,18 @@ struct TodayView: View {
                 Text("書いている間は、時計がゆっくり進みます。")
                     .font(.subheadline)
                     .foregroundColor(.dlTextSub)
+            }
+            // 日替わりのお題（迷う日の助け。書き込み画面の薄い文字と同じ）
+            HStack(spacing: 8) {
+                Text("今日のお題")
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(.dlPrimary)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .background(Color.dlPrimaryBg)
+                    .clipShape(Capsule())
+                Text(Prompt.of())
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.dlText)
             }
             Button {
                 showWrite = true

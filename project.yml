@@ -28,10 +28,17 @@ targets:
       Release: Config/Ads.xcconfig
     dependencies:
       - package: GoogleMobileAds
+      - target: JubyoNikkiWidget
+    entitlements:
+      path: JubyoNikki/JubyoNikki.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.taigayanai.jubyonikki]
     sources:
       - path: JubyoNikki
         excludes:
           - AppIcon.icon
+          - JubyoNikki.entitlements
+      - path: Shared
       # Icon Composer で作ったアイコン（.icon はフォルダだが1つのファイルとして扱う）
       - path: JubyoNikki/AppIcon.icon
         type: file
@@ -52,6 +59,10 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         ITSAppUsesNonExemptEncryption: false
+        # ウィジェットから開く（jubyonikki://write ですぐ 10 秒）
+        CFBundleURLTypes:
+          - CFBundleURLName: com.taigayanai.jubyonikki
+            CFBundleURLSchemes: [jubyonikki]
         # 昨日を取り戻すときのリワード広告（AdMob）。ID は Config/Ads.xcconfig
         GADApplicationIdentifier: $(ADMOB_APP_ID)
         AdMobRewardedUnitID: $(ADMOB_REWARDED_UNIT_ID)
@@ -107,3 +118,31 @@ targets:
           - SKAdNetworkIdentifier: 3rd42ekr43.skadnetwork
           - SKAdNetworkIdentifier: 97r2b46745.skadnetwork
           - SKAdNetworkIdentifier: 3qcr597p9d.skadnetwork
+
+  # ホーム画面のウィジェット（連続日数・今日のお題）
+  JubyoNikkiWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widget
+        excludes:
+          - Widget.entitlements
+      - path: Shared
+    entitlements:
+      path: Widget/Widget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.taigayanai.jubyonikki]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.taigayanai.jubyonikki.widget
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: 10秒日記
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension

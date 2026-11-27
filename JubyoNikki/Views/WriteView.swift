@@ -51,6 +51,7 @@ struct WriteView: View {
     private var todayKey: String { dayKey }
     private var existing: DiaryEntry? { entries.first { $0.dayKey == todayKey } }
     private var charCount: Int { Self.count(text) }
+    private var totalChars: Int { entries.reduce(0) { $0 + Self.count($1.text) } }
     /// いま書いている最中か（時計がスローになる）
     private var frozen: Bool { !finished && now.timeIntervalSince(lastType) < Self.freeze }
 
@@ -158,7 +159,7 @@ struct WriteView: View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
-                    Text("今日あったこと、ひとことで。")
+                    Text(Prompt.of(Day.date(from: dayKey) ?? Date()))
                         .foregroundColor(.dlTextLight)
                         .padding(.top, 8)
                         .padding(.leading, 5)
@@ -210,6 +211,11 @@ struct WriteView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.dlPrimary)
                     .padding(.top, 6)
+                    // たまっていく実感（これまでに書いた文字の合計）
+                    Text("これまでに \(totalChars.formatted()) 文字")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundColor(.dlTextSub)
+                        .monospacedDigit()
                     if gotShiori {
                         Label("\(Shiori.streakPerShiori)日続いたので、しおりを1枚もらいました", systemImage: "bookmark.fill")
                             .font(.subheadline.weight(.semibold))
@@ -291,6 +297,7 @@ struct WriteView: View {
             }
         }
         try? context.save()
+        WidgetSync.update(context)
         Task { await Reminder.shared.reschedule() }
     }
 }

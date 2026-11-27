@@ -7,35 +7,69 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0CE9DC091E618F8CC72E0359 /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC1E8D9F8A23DC5AC55DA9D /* Shared.swift */; };
 		3093DA6A88EDF7D3DF833EF2 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D82F60A8120D4872F44F11 /* CalendarView.swift */; };
 		3D510A905F1584466134BDBF /* JubyoNikkiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */; };
 		40A0B47D8FE08F5FFB2BAC68 /* DiaryTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090291EC7CDF886FED0040C /* DiaryTextView.swift */; };
 		486DF1410B82938010344CB1 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 723227255C95839267399F10 /* GoogleMobileAds */; };
+		586CFE81F632D5F66E3F4FDB /* JubyoWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE2512187A25B2EAF152DCD /* JubyoWidget.swift */; };
 		590E47C2897E887847F11408 /* DiaryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */; };
+		5D17558FAEA0A7A2D22D38A6 /* JubyoNikkiWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7B97256D9ECF58670860C60C /* JubyoNikkiWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5F8169FB4D5081CCFBB8ECD2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4C2B9E5B04A6888BDA632724 /* AppIcon.icon */; };
 		67D31025A8F716C6EA8B5531 /* Shiori.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF1FBAE46566DF7225440BE /* Shiori.swift */; };
 		7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */; };
 		BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0995464BBCC4D59E5D6A29CF /* SettingsView.swift */; };
+		BEE805131B63D48ADE755219 /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC1E8D9F8A23DC5AC55DA9D /* Shared.swift */; };
+		D06FF0144718E90EA9A9A760 /* WidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868AC48171EAD61104140B03 /* WidgetSync.swift */; };
 		D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */; };
 		D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821E372AF4D1359A6B242F31 /* Theme.swift */; };
 		DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D764E4B38C2A0665FA050FE8 /* WriteView.swift */; };
 		E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E8ADA7363799F1B19AABC5 /* Reminder.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9B56A7949BFA2644A4E6268F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 478350FCD658B7E897708EED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1047DE4556B36FB98C6BF5E7;
+			remoteInfo = JubyoNikkiWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		507FD0B672C8C0384C8D0949 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5D17558FAEA0A7A2D22D38A6 /* JubyoNikkiWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0995464BBCC4D59E5D6A29CF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		270F7662350575B1C8A4063A /* JubyoNikkiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JubyoNikkiApp.swift; sourceTree = "<group>"; };
 		4C2B9E5B04A6888BDA632724 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		6090291EC7CDF886FED0040C /* DiaryTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryTextView.swift; sourceTree = "<group>"; };
+		6DC1E8D9F8A23DC5AC55DA9D /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
+		6EE2512187A25B2EAF152DCD /* JubyoWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JubyoWidget.swift; sourceTree = "<group>"; };
 		790BB9CB2BB91B8417E9BA97 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7B97256D9ECF58670860C60C /* JubyoNikkiWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = JubyoNikkiWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardedAds.swift; sourceTree = "<group>"; };
 		821E372AF4D1359A6B242F31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8523D8BB1C2DE7E49B1F5A96 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		868AC48171EAD61104140B03 /* WidgetSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSync.swift; sourceTree = "<group>"; };
 		A0D82F60A8120D4872F44F11 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = JubyoNikki.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA073852DFBED87CD6F5427 /* DiaryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryEntry.swift; sourceTree = "<group>"; };
 		D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Ads.xcconfig; sourceTree = "<group>"; };
 		D764E4B38C2A0665FA050FE8 /* WriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteView.swift; sourceTree = "<group>"; };
+		DC8AB2C2E40C88CCAC3AE261 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E7E8ADA7363799F1B19AABC5 /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 		EAF1FBAE46566DF7225440BE /* Shiori.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shiori.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -71,6 +105,7 @@
 				E7E8ADA7363799F1B19AABC5 /* Reminder.swift */,
 				80D0BAF12DC770DBA0BBA79A /* RewardedAds.swift */,
 				EAF1FBAE46566DF7225440BE /* Shiori.swift */,
+				868AC48171EAD61104140B03 /* WidgetSync.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -87,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				A34A4077BB82ADB86F02F2A3 /* JubyoNikki.app */,
+				7B97256D9ECF58670860C60C /* JubyoNikkiWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,8 +140,18 @@
 			children = (
 				F9168BE6A3CD675FDD512BED /* Config */,
 				B5E3146FF74B2C96CECCBADF /* JubyoNikki */,
+				9CB3CA5E6F29AC477EDCFD6C /* Shared */,
+				F866C32F7A0E38B2D059FCB7 /* Widget */,
 				3EA7CE4B6BE81D3D498B3675 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		9CB3CA5E6F29AC477EDCFD6C /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				6DC1E8D9F8A23DC5AC55DA9D /* Shared.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		B5E3146FF74B2C96CECCBADF /* JubyoNikki */ = {
@@ -121,6 +167,15 @@
 			path = JubyoNikki;
 			sourceTree = "<group>";
 		};
+		F866C32F7A0E38B2D059FCB7 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				DC8AB2C2E40C88CCAC3AE261 /* Info.plist */,
+				6EE2512187A25B2EAF152DCD /* JubyoWidget.swift */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
 		F9168BE6A3CD675FDD512BED /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -132,6 +187,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1047DE4556B36FB98C6BF5E7 /* JubyoNikkiWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FBECF09C14D4D713642B98CF /* Build configuration list for PBXNativeTarget "JubyoNikkiWidget" */;
+			buildPhases = (
+				996A2AC923DF1B4175EC0144 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JubyoNikkiWidget;
+			packageProductDependencies = (
+			);
+			productName = JubyoNikkiWidget;
+			productReference = 7B97256D9ECF58670860C60C /* JubyoNikkiWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		6B8D88A52BDBFCF943266B2A /* JubyoNikki */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 02276867E6A140990D48414E /* Build configuration list for PBXNativeTarget "JubyoNikki" */;
@@ -139,10 +211,12 @@
 				C0CDF31F777A5F9E996E4A09 /* Sources */,
 				FBB53D625B4F4BF29710F643 /* Resources */,
 				CEA8C7CD4DE827D8E0117D8E /* Frameworks */,
+				507FD0B672C8C0384C8D0949 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2E165ED2BBED54049B50127A /* PBXTargetDependency */,
 			);
 			name = JubyoNikki;
 			packageProductDependencies = (
@@ -161,6 +235,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					1047DE4556B36FB98C6BF5E7 = {
+						DevelopmentTeam = 367X9MY986;
+						ProvisioningStyle = Automatic;
+					};
 					6B8D88A52BDBFCF943266B2A = {
 						DevelopmentTeam = 367X9MY986;
 						ProvisioningStyle = Automatic;
@@ -185,6 +263,7 @@
 			projectRoot = "";
 			targets = (
 				6B8D88A52BDBFCF943266B2A /* JubyoNikki */,
+				1047DE4556B36FB98C6BF5E7 /* JubyoNikkiWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -201,6 +280,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		996A2AC923DF1B4175EC0144 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				586CFE81F632D5F66E3F4FDB /* JubyoWidget.swift in Sources */,
+				BEE805131B63D48ADE755219 /* Shared.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0CDF31F777A5F9E996E4A09 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -212,21 +300,50 @@
 				E4DAD98F62A8FF4B45392A13 /* Reminder.swift in Sources */,
 				D478A291F8BDAB73ED5B9AA4 /* RewardedAds.swift in Sources */,
 				BD763836B26EA3702689FF75 /* SettingsView.swift in Sources */,
+				0CE9DC091E618F8CC72E0359 /* Shared.swift in Sources */,
 				67D31025A8F716C6EA8B5531 /* Shiori.swift in Sources */,
 				D508F3644DB913A6CBF9C2FC /* Theme.swift in Sources */,
 				7C698E27B679A5C545169DD1 /* TodayView.swift in Sources */,
+				D06FF0144718E90EA9A9A760 /* WidgetSync.swift in Sources */,
 				DB52F6AFB1F8E4456C84D359 /* WriteView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2E165ED2BBED54049B50127A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1047DE4556B36FB98C6BF5E7 /* JubyoNikkiWidget */;
+			targetProxy = 9B56A7949BFA2644A4E6268F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0DF8FE9E89ADCD0B5AED6016 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Widget/Widget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = Widget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.taigayanai.jubyonikki.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		1D2CF5E8F01FAF15E9A5AD34 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = JubyoNikki/JubyoNikki.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = JubyoNikki/Info.plist;
@@ -299,11 +416,30 @@
 			};
 			name = Release;
 		};
+		7B61D3CBBD3E5EF68B6793D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Widget/Widget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = Widget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.taigayanai.jubyonikki.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		813653054B9D989077CEE593 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D47442B09EDA6B1D83CF06FD /* Ads.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = JubyoNikki/JubyoNikki.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = JubyoNikki/Info.plist;
@@ -400,6 +536,15 @@
 			buildConfigurations = (
 				9135EAEC72E853AA07068B5C /* Debug */,
 				54120665C84D52A90606A472 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FBECF09C14D4D713642B98CF /* Build configuration list for PBXNativeTarget "JubyoNikkiWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0DF8FE9E89ADCD0B5AED6016 /* Debug */,
+				7B61D3CBBD3E5EF68B6793D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
